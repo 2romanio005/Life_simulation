@@ -1,4 +1,3 @@
-#pragma once
 #include "Definition.h"
 
 
@@ -8,8 +7,8 @@ Cell** map;
 
 int size_screen_x;
 int size_screen_y;
-int size_map_x = 5;
-int size_map_y = 5;
+int size_map_x = 93;
+int size_map_y = 45;
 int size_cell;
 int size_half_cell;
 
@@ -57,7 +56,7 @@ int PosSliderStepDraw = 1;
 
 
 HWND CheckBoxRandDivision;
-bool FlagRandDivision = false;
+bool FlagRandDivision = true;
 
 HWND StaticRedEat;
 HWND SliderRedEat;

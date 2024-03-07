@@ -142,13 +142,6 @@
   <ItemGroup>
     <ClCompile Include="Actions.cpp" />
     <ClCompile Include="Cell.cpp" />
-    <ClCompile Include="Creature_Actions.cpp" />
-    <ClCompile Include="Creature_Herbivore.cpp" />
-    <ClCompile Include="Creature_Herbivore_Actions.cpp" />
-    <ClCompile Include="Creature_Plant.cpp" />
-    <ClCompile Include="Creature_Plant_Actions.cpp" />
-    <ClCompile Include="Creature_Scavenger.cpp" />
-    <ClCompile Include="Creature_Scavenger_Actions.cpp" />
     <ClCompile Include="Declaration.cpp" />
     <ClCompile Include="Function.cpp" />
     <ClCompile Include="Life_simulation.cpp" />
@@ -157,11 +150,7 @@
   <ItemGroup>
     <ClInclude Include="Actions.h" />
     <ClInclude Include="Cell.h" />
-    <ClInclude Include="Creature_Herbivore.h" />
-    <ClInclude Include="Creature_Plant.h" />
-    <ClInclude Include="Creature_Scavenger.h" />
     <ClInclude Include="Definition.h" />
-    <ClInclude Include="ENUMS.h" />
     <ClInclude Include="MainConnection.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Creatures.h" />

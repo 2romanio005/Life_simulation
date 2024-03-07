@@ -1,6 +1,5 @@
-РїВ»С—#pragma once
+﻿#pragma once
 #include "Definition.h"
-#include "ENUMS.h"
 
 
 class Cell
@@ -12,7 +11,7 @@ public:
 
 	void Creature_step();
 
-	void Creature_allow_to_act();
+	void Creature_one_step_finish();
 
 	void draw_myself(HDC hdc);
 	std::string write_myself();
@@ -32,7 +31,7 @@ public:
 
 	std::pair<int, int> get_map_cord();
 
-	TYPE_CREATURE get_TYPE_CREATURE();
+	Type_Creature get_Type_Creature();
 
 	int get_Creature_energy();
 
