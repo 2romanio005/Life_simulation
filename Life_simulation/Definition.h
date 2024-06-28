@@ -56,13 +56,13 @@ extern int size_half_cell;
 
 #define limit_energy 2000
 #define limit_age 100
-#define limit_power_step 5 // РєРѕР»РёС‡РµСЃС‚РІРѕ РЅРµР·Р°РєР°РЅРёРІР°СЋС‰РёС… С…РѕРґ РґРµР№СЃС‚РІРёР№ Р·Р° С…РѕРґ
+#define limit_power_step 5 // количество незаканивающих ход действий за ход
 
 #define mut_chence 5 // %
 #define mut_type_chence 0 // %
 
 #define	max_brain_size 100
-#define min_multiply_energy 3000 // РјРёРЅРёРјР°Р»СЊРЅР°СЏ СЌРЅРµСЂРіРёСЏ РґР»СЏ РґРµР»РµРЅРёСЏ
+#define min_multiply_energy 3000 // минимальная энергия для деления
 
 #define start_energy 70000
 #define start_max_len_brain 4
@@ -93,18 +93,18 @@ class Action_condition_by_TYPE_CREATURE_global;
 class Action_condition_by_Cell_global;
 
 
-// РІ Creature.cpp
+// в Creature.cpp
 std::pair<int, int> near_cell_cord(std::pair<int, int> now_map_cord, DIRECTION to_dir);
 Creature* parse_str_to_Creature(const std::pair<int, int>& map_cord, std::string str);
 std::vector<Action*>* copy_brain(const std::vector<Action*>& sample_brain);
 
-// РІ Cell.cpp
+// в Cell.cpp
 Cell* get_Cell_by_map_cord(const std::pair<int, int>& map_cord);
 
-// СЃРІРµСЂС…Сѓ Function.cpp
+// сверху Function.cpp
 int parse_str_to_int_one_step(const std::string& s, int* iter, char separator = ';');
 DIRECTION turn(DIRECTION strt, DIRECTION step);
-// СЃРЅРёР·Сѓ Function.cpp
+// снизу Function.cpp
 std::string string_by_type_creature(TYPE_CREATURE type_creature);
 std::string string_by_dir_for_condition(DIRECTION dir);
 std::string string_by_dir_for_turn(DIRECTION dir);

@@ -1,4 +1,4 @@
-п»ї#pragma once
+#pragma once
 #include "Creatures.h"
 #include "Creature_Plant.h"
 #include "Creature_Herbivore.h"
@@ -38,7 +38,7 @@ bool Creature::Condition::use(int power_step) {
 		return false;
 	}
 
-	if (this->Cond()) {       // РїРѕС„РёРєСЃРёС‚СЊ РєРѕРіРґР° РїРѕСЃР»Рµ СѓСЃР»РѕРІРёСЏ РїСЂРёС€Р»Рѕ Рє РґРµР№СЃС‚РІРёСЋ Рё РЅРµ РґРѕРґРµР»Р°РµС‚ РµРіРѕ РґРѕ РєРѕРЅС†Р° С‚Рє СѓР¶Рµ РїРѕС‚СЂР°С‚РёР» СЃС‚РµРїС‹  !!!!!!!!!!!
+	if (this->Cond()) {       // пофиксить когда после условия пришло к действию и не доделает его до конца тк уже потратил степы  !!!!!!!!!!!
 		creature->iter = true_iter;
 	}
 	else {
@@ -92,7 +92,7 @@ std::pair<int, int> near_cell_cord(std::pair<int, int> now_map_cord, DIRECTION t
 	case DIRECTION::LEFT:
 		now_map_cord.first = (now_map_cord.first - 1 + size_map_x) % size_map_x;
 		break;
-	case DIRECTION::UNDER:// С‚Р°Рє С…РѕСЂРѕС€Рѕ
+	case DIRECTION::UNDER:// так хорошо
 		break;
 	}
 	return now_map_cord;
@@ -250,9 +250,9 @@ Creature::Creature(std::pair<int, int> map_cord, int energy, DIRECTION dir, int 
 	else {
 		for (auto& act : *brain)
 		{
-			act->set_Creature(this);    // РїРѕРјРµС‚РёР» РєР°Рє СЃРІРѕР№
+			act->set_Creature(this);    // пометил как свой
 		}
-		this->brain = *brain;    // СЃРєРѕРїРёСЂРѕРІР°Р» РјРѕР·Рі Рё С…СЂР°РЅРёС‚ РєР°Рє СЃРІРѕР№
+		this->brain = *brain;    // скопировал мозг и хранит как свой
 	}
 }
 
@@ -268,10 +268,10 @@ Creature::~Creature()
 void Creature::step() {
 	if (this->flag_step) {
 		this->flag_step = false;
-		for (int i = 0; i < limit_power_step && !this->brain[this->iter]->use(); ++i) {};   // С†РёРєР» РґР»СЏ РїСЂРѕРєСЂСѓС‚РєРё РґРµР№СЃС‚РІРёР№, РЅРµ Р·Р°РІРµСЂС€Р°СЋС€РёС… С…РѕРґ 
+		for (int i = 0; i < limit_power_step && !this->brain[this->iter]->use(); ++i) {};   // цикл для прокрутки действий, не завершаюших ход 
 	}
 
-	//int tmp = 0;   // РєРѕР»РёС‡РµСЃС‚РІРѕ СЃСѓС‰РµСЃС‚РІ РјРѕРµРіРѕ РёРїР°
+	//int tmp = 0;   // количество существ моего ипа
 	//switch (this->get_TYPE_CREATURE())
 	//{
 	//case TYPE_CREATURE::Plant:
@@ -297,7 +297,7 @@ void Creature::allow_to_act()
 
 
 
-void Creature::build_brain(HWND hWnd)    // !!!!!!!!!!!! РЅР°Р·РІР°РЅРёРµ
+void Creature::build_brain(HWND hWnd)    // !!!!!!!!!!!! название
 {
 	for (unsigned int i = this->brain.size(); i < StaticPeepBrain.size(); i++)
 	{
@@ -397,11 +397,11 @@ int Creature::get_brain_size()
 }
 
 
-void Creature::brain_mutation(unsigned int mut_iter, std::vector<Action*>* change_brain)  // РјСѓС‚РёСЂСѓРµС‚ РіРµРЅ РЅРѕРјСЂ mut_iter РёР»Рё РјРѕР·Рі РґРѕСЂР°СЃС‚Р°РµС‚ РґРѕ РјСѓС‚РёСЂСѓРµРјРіРѕ РіРµРЅР°
+void Creature::brain_mutation(unsigned int mut_iter, std::vector<Action*>* change_brain)  // мутирует ген номр mut_iter или мозг дорастает до мутируемго гена
 {
-	if (change_brain->size() > mut_iter) {     // РµСЃР»Рё РјРµРЅСЏРµРјС‹Р№ РіРµРЅ СѓР¶Рµ СЃРѕР·РґР°РЅ
-		if (rand() % 2 || !(*change_brain)[mut_iter]->mutation()) {			// РІРѕР·РјРѕР¶РЅРѕ РїРѕРјРµРЅСЏС‚СЊ С‡Р°СЃС‚СЊ РіРµРЅР°
-			delete (*change_brain)[mut_iter];								// РµСЃР»Рё РЅРµ РїРѕР»СѓС‡РёР»РѕСЃСЊ, С‚Рѕ РёР·РјРµРЅРёС‚СЊ РІРµСЃСЊ РіРµРЅ
+	if (change_brain->size() > mut_iter) {     // если меняемый ген уже создан
+		if (rand() % 2 || !(*change_brain)[mut_iter]->mutation()) {			// возможно поменять часть гена
+			delete (*change_brain)[mut_iter];								// если не получилось, то изменить весь ген
 			(*change_brain)[mut_iter] = get_rand_Action(this, change_brain->size());
 		}
 		return;
@@ -410,7 +410,7 @@ void Creature::brain_mutation(unsigned int mut_iter, std::vector<Action*>* chang
 	while (mut_iter >= change_brain->size()) {
 		change_brain->push_back(get_rand_Action(this, mut_iter));
 	}
-	//for (auto& act : this->brain)   // С‡С‚РѕР±С‹ СЃ Р±РѕР»СЊС€РёРј С€Р°РЅСЃРѕРј РЅР° РЅРѕРІС‹Рµ РіРµРЅС‹ СЃСЃС‹Р»Р°Р»СЃСЊ
+	//for (auto& act : this->brain)   // чтобы с большим шансом на новые гены ссылалсь
 	//{
 	//	if (rand() % 2) {
 	//		act->mutation();

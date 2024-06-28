@@ -1,6 +1,6 @@
-РїВ»С—//{{NO_DEPENDENCIES}}
-// Р вЂ™Р С”Р В»РЎР‹РЎвЂЎР В°Р ВµР С�РЎвЂ№Р в„– РЎвЂћР В°Р в„–Р В», РЎРѓР С•Р В·Р Т‘Р В°Р Р…Р Р…РЎвЂ№Р в„– Р Р† Microsoft Visual C++.
-// Р пїЅРЎРѓР С—Р С•Р В»РЎРЉР В·РЎС“Р ВµРЎвЂљРЎРѓРЎРЏ Life_simulation.rc
+//{{NO_DEPENDENCIES}}
+// Включаемый файл, созданный в Microsoft Visual C++.
+// Используется Life_simulation.rc
 //
 #define IDI_ICON1                       101
 

@@ -18,7 +18,7 @@ enum TYPE_ACTION
 	TURN,
 	CONDITION_BY_TYPE_CREATURE,
 	CONDITION_BY_CELL,
-	CHANGE_ITER   // РЅРµ РёСЃРїР»СЊР·СѓРµС‚СЃСЏ
+	CHANGE_ITER   // не испльзуется
 };
 
 enum DIRECTION

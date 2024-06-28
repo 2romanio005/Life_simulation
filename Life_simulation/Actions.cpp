@@ -1,4 +1,4 @@
-п»ї#pragma once
+#pragma once
 #include "Actions.h"
 
 
@@ -127,7 +127,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //
 //			std::vector<Action*>* br = copy_brain(this->creature->brain);
 //
-//			if (rand() % 100 < mut_chence) {    // РјСѓС‚Р°С†РёСЏ
+//			if (rand() % 100 < mut_chence) {    // мутация
 //				int mut_iter = rand() % (this->creature->brain.size() + 1);
 //				this->creature->brain_mutation(min(mut_iter, max_brain_size), br);
 //			}
@@ -373,7 +373,7 @@ class Condition
 		//bool (*Action)(Creature* creature, DIRECTION dir, Cell* cell);
 		//bool (*Cond)(Creature* creature, DIRECTION dir, TYPE_CREATURE type_creature);
 
-		int power;      // РєРѕР»РёС‡РµСЃС‚РІРѕ РїРѕРІС‚РѕСЂРµРЅРёР№ СЌС‚РѕРіРѕ РґРµР№СЃС‚РІРёСЏ Р·Р° РґРёРЅ С…РѕРґ
+		int power;      // количество повторений этого действия за дин ход
 		int power_step;
 		int true_iter;
 		int false_iter;
