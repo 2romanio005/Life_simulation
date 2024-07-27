@@ -1,13 +1,12 @@
 #pragma once
-#include "Definition.h"
 
 enum TYPE_CREATURE
 {
-	Plant,
-	Herbivore,
-	Scavenger,
+	PLANT,
+	HERBIVORE,
+	SCAVENGER,
 
-	Void
+	Void    // закреплено как последнее для % 
 };
 
 enum TYPE_ACTION
@@ -17,8 +16,9 @@ enum TYPE_ACTION
 	MULTIPLY,
 	TURN,
 	CONDITION_BY_TYPE_CREATURE,
-	CONDITION_BY_CELL,
-	CHANGE_ITER   // не испльзуется
+	CONDITION_BY_CELL_ENERGY,
+	CONDITION_BY_CREATURE_ENERGY,
+	CHANGE_ITER   // не испльзуется // закреплено как последнее для % 
 };
 
 enum DIRECTION

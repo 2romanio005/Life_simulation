@@ -3,7 +3,7 @@
 
 #include "Actions.h"
 #include "Cell.h"
-#include "ENUMS.h"
+
 //#include "Creature_Plant.h"
 //#include "Creature_Herbivore.h"
 //#include "Creature_Scavenger.h"
@@ -19,7 +19,7 @@ public:
 
 	virtual Creature* copy(std::pair<int, int> map_cord) = 0;
 
-	void step();
+	virtual void step() = 0;
 
 	void allow_to_act();
 
@@ -38,8 +38,11 @@ public:
 	virtual TYPE_CREATURE get_TYPE_CREATURE() = 0;
 
 protected:
-	void brain_mutation(unsigned int mut_iter, std::vector<Action*>* brain);
 	void check_my_live();
+
+	void make_act();
+
+	virtual void brain_mutation(std::vector<Action*>* brain, unsigned int mut_iter) = 0;
 
 	virtual Action* get_rand_Action(Creature* creature, unsigned int max_iter) = 0;
 
@@ -102,7 +105,7 @@ protected:
 	public:
 		Action_turn_global(Creature* creature, DIRECTION to_dir);
 
-		virtual bool use() = 0;
+		bool use() override;
 
 		bool mutation() override;
 
@@ -120,7 +123,7 @@ protected:
 	public:
 		Action_condition_by_TYPE_CREATURE_global(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, TYPE_CREATURE type_creature);
 
-		virtual bool use() = 0;
+		bool use() override;
 
 		bool mutation() override;
 
@@ -138,11 +141,33 @@ protected:
 		unsigned int false_iter;
 	};
 
-	class Action_condition_by_Cell_global : public Action {
+	class Action_condition_by_Cell_energy_global : public Action {
 	public:
-		Action_condition_by_Cell_global(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit);
+		 Action_condition_by_Cell_energy_global(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit);
 
-		virtual bool use() = 0;
+		bool use() override;
+
+		bool mutation() override;
+
+		virtual Action* copy() = 0;
+
+		std::string* draw_myself() override;
+		void write_myself(std::string* out) override;
+
+		TYPE_ACTION get_TYPE_ACTION() override;
+	protected:
+		DIRECTION to_dir;
+		int limit;
+
+		unsigned int true_iter;
+		unsigned int false_iter;
+	};
+
+	class Action_condition_by_Creature_energy_global : public Action {
+	public:
+		Action_condition_by_Creature_energy_global(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit);
+
+		bool use() override;
 
 		bool mutation() override;
 

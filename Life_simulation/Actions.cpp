@@ -53,7 +53,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //{
 //	switch (creature->get_TYPE_CREATURE())
 //	{
-//	case TYPE_CREATURE::Plant:
+//	case TYPE_CREATURE::PLANT:
 //	{
 //		//creature->energy += max(limit_energy - (creature->get_under_me()->free_energy += 30), 0);
 //		//int tmp = max(400 - this->creature->get_under_me()->get_free_energy(), 0);
@@ -66,7 +66,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //		//creature->get_under_me()->change_free_energy(1);
 //		break;
 //	}
-//	case TYPE_CREATURE::Herbivore:
+//	case TYPE_CREATURE::HERBIVORE:
 //	{
 		//Cell* next_cell = get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, this->creature->dir));
 
@@ -79,7 +79,7 @@ std::pair<std::string, int>* Action::build_draw(){
 		//}
 //		break;
 //	}
-//	case TYPE_CREATURE::Scavenger:
+//	case TYPE_CREATURE::SCAVENGER:
 //	{
 //		//creature->energy += max(creature->get_under_me()->free_energy, 0);
 //		//creature->get_under_me()->free_energy = 0;
@@ -127,21 +127,21 @@ std::pair<std::string, int>* Action::build_draw(){
 //
 //			std::vector<Action*>* br = copy_brain(this->creature->brain);
 //
-//			if (rand() % 100 < mut_chence) {    // мутация
+//			if (rand() % 100 < mut_chance) {    // мутация
 //				int mut_iter = rand() % (this->creature->brain.size() + 1);
 //				this->creature->brain_mutation(min(mut_iter, max_brain_size), br);
 //			}
 //
 //			Creature* cr = nullptr;
-//			switch (((rand() % 100) < mut_type_chence) ? (rand() % 3) : this->creature->get_TYPE_CREATURE())
+//			switch (((rand() % 100) < mut_type_chance) ? (rand() % 3) : this->creature->get_TYPE_CREATURE())
 //			{
-//			case TYPE_CREATURE::Plant:
+//			case TYPE_CREATURE::PLANT:
 //				cr = new Creature_Plant(near_place->get_map_cord(), this->creature->energy, DIRECTION(rand() % 4), 0, br);
 //				break;
-//			case TYPE_CREATURE::Herbivore:
+//			case TYPE_CREATURE::HERBIVORE:
 //				cr = new Creature_Herbivore(near_place->get_map_cord(), this->creature->energy, DIRECTION(rand() % 4), 0, br);
 //				break;
-//			case TYPE_CREATURE::Scavenger:
+//			case TYPE_CREATURE::SCAVENGER:
 //				cr = new Creature_Scavenger(near_place->get_map_cord(), this->creature->energy, DIRECTION(rand() % 4), 0, br);
 //				break;
 //			default:
@@ -204,7 +204,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //
 //
 //
-//bool Action_condition_by_Cell::use()
+//bool Action_condition_by_Cell_energy::use()
 //{
 //	if (get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, this->to_dir == DIRECTION::UNDER ? DIRECTION::UNDER : turn(this->creature->dir, this->to_dir)))->get_free_energy() >= this->limit) {
 //		this->creature->iter = this->true_iter;
@@ -216,9 +216,9 @@ std::pair<std::string, int>* Action::build_draw(){
 //	return false;
 //}
 //
-//Action* Action_condition_by_Cell::copy()
+//Action* Action_condition_by_Cell_energy::copy()
 //{
-//	return new Action_condition_by_Cell(this->creature, this->to_dir, this->true_iter, this->false_iter, this->limit);
+//	return new Action_condition_by_Cell_energy(this->creature, this->to_dir, this->true_iter, this->false_iter, this->limit);
 //}
 //
 //
@@ -257,7 +257,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //
 //void Action_go(Creature* creature)
 //{
-//	//if (creature->get_TYPE_CREATURE() == TYPE_CREATURE::Herbivore) {
+//	//if (creature->get_TYPE_CREATURE() == TYPE_CREATURE::HERBIVORE) {
 //	//	creature->energy -= use_energy(20);
 //	//}
 //	//else {
@@ -313,7 +313,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //
 //	switch (creature->get_TYPE_CREATURE())
 //	{
-//	case TYPE_CREATURE::Plant:
+//	case TYPE_CREATURE::PLANT:
 //		//creature->energy += max(limit_energy - (creature->get_under_me()->free_energy += 30), 0);
 //	{
 //		int tmp = max(400 - creature->get_under_me()->free_energy, 0);
@@ -322,7 +322,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //		//creature->get_under_me()->free_energy += tmp / 4;
 //		break;
 //	}
-//	case TYPE_CREATURE::Herbivore:
+//	case TYPE_CREATURE::HERBIVORE:
 //	{
 		//if (creature->see[creature->dir].size() == 0) {
 		//	Action_look(creature);
@@ -339,7 +339,7 @@ std::pair<std::string, int>* Action::build_draw(){
 		////}
 		//break;
 //	}
-//	case TYPE_CREATURE::Scavenger:
+//	case TYPE_CREATURE::SCAVENGER:
 //	{
 //		//creature->energy += max(creature->get_under_me()->free_energy, 0);
 //		//creature->get_under_me()->free_energy = 0;

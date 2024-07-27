@@ -75,6 +75,14 @@ Creature::Action_turn_global::Action_turn_global(Creature* creature, DIRECTION t
 	this->to_dir = to_dir;
 }
 
+bool Creature::Action_turn_global::use()
+{
+	this->creature->dir = turn(this->creature->dir, this->to_dir);
+
+	this->creature->next_iter();
+	return false;
+}
+
 bool Creature::Action_turn_global::mutation()
 {
 	this->to_dir = DIRECTION(rand() % 3 - 3);
@@ -85,7 +93,7 @@ std::string* Creature::Action_turn_global::draw_myself()
 {
 	return new std::string[5]
 	{
-		"Поворот",
+		"Повoрот",
 		string_by_dir_for_turn(this->to_dir),
 		"",
 		"",
@@ -118,6 +126,18 @@ Creature::Action_condition_by_TYPE_CREATURE_global::Action_condition_by_TYPE_CRE
 	this->type_creature = type_creature;
 }
 
+bool Creature::Action_condition_by_TYPE_CREATURE_global::use()
+{
+	if (get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, turn(this->creature->dir, this->to_dir)))->get_TYPE_CREATURE() == this->type_creature) {
+		this->creature->iter = this->true_iter;
+	}
+	else {
+		this->creature->iter = this->false_iter;
+	}
+
+	return false;
+}
+
 bool Creature::Action_condition_by_TYPE_CREATURE_global::mutation()
 {
 	switch (rand() % 4)
@@ -132,7 +152,7 @@ bool Creature::Action_condition_by_TYPE_CREATURE_global::mutation()
 		this->to_dir = DIRECTION(rand() % 4 - 4);
 		break;
 	case 3:
-		this->type_creature = TYPE_CREATURE(rand() % 4);
+		this->type_creature = TYPE_CREATURE(rand() % (TYPE_CREATURE::Void + 1));
 		break;
 	}
 
@@ -170,7 +190,7 @@ TYPE_ACTION Creature::Action_condition_by_TYPE_CREATURE_global::get_TYPE_ACTION(
 
 
 
-Creature::Action_condition_by_Cell_global::Action_condition_by_Cell_global(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit) : Action(creature)
+Creature:: Action_condition_by_Cell_energy_global:: Action_condition_by_Cell_energy_global(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit) : Action(creature)
 {
 	this->to_dir = to_dir;
 
@@ -181,7 +201,19 @@ Creature::Action_condition_by_Cell_global::Action_condition_by_Cell_global(Creat
 	//this->cond = cond;
 }
 
-bool Creature::Action_condition_by_Cell_global::mutation()
+bool Creature::Action_condition_by_Cell_energy_global::use()
+{
+	if (get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, this->to_dir == DIRECTION::UNDER ? DIRECTION::UNDER : turn(this->creature->dir, this->to_dir)))->get_free_energy() >= this->limit) {
+		this->creature->iter = this->true_iter;
+	}
+	else {
+		this->creature->iter = this->false_iter;
+	}
+
+	return false;
+}
+
+bool Creature:: Action_condition_by_Cell_energy_global::mutation()
 {
 	switch (rand() % 4)
 	{
@@ -192,20 +224,23 @@ bool Creature::Action_condition_by_Cell_global::mutation()
 		this->false_iter = rand() % this->creature->brain.size();
 		break;
 	case 2:
-		this->to_dir = DIRECTION(rand() % 4 - 4);
+	{
+		int tmp = rand() % 5;
+		this->to_dir = DIRECTION(tmp == 4 ? 4 : (tmp - 4));
 		break;
+	}
 	case 3:
-		this->limit = TYPE_CREATURE(rand() % limit_energy);
+		this->limit = rand() % limit_energy;
 		break;
 	}
 	return true;
 }
 
-std::string* Creature::Action_condition_by_Cell_global::draw_myself()
+std::string* Creature:: Action_condition_by_Cell_energy_global::draw_myself()
 {
 	return new std::string[5]
 	{
-		"Условие",
+		"На клетке",
 		string_by_dir_for_condition(this->to_dir),
 		std::to_string(this->limit),
 		std::to_string(this->true_iter),
@@ -213,7 +248,7 @@ std::string* Creature::Action_condition_by_Cell_global::draw_myself()
 	};
 }
 
-void Creature::Action_condition_by_Cell_global::write_myself(std::string* out)
+void Creature:: Action_condition_by_Cell_energy_global::write_myself(std::string* out)
 {
 	*out +=
 		std::to_string(this->get_TYPE_ACTION())
@@ -224,10 +259,88 @@ void Creature::Action_condition_by_Cell_global::write_myself(std::string* out)
 		+ ';';
 }
 
-TYPE_ACTION Creature::Action_condition_by_Cell_global::get_TYPE_ACTION()
+TYPE_ACTION Creature:: Action_condition_by_Cell_energy_global::get_TYPE_ACTION()
 {
-	return TYPE_ACTION::CONDITION_BY_CELL;
+	return TYPE_ACTION::CONDITION_BY_CELL_ENERGY;
 }
+
+
+
+
+Creature::Action_condition_by_Creature_energy_global::Action_condition_by_Creature_energy_global(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit) : Action(creature)
+{
+	this->to_dir = to_dir;
+
+	this->true_iter = true_iter;
+	this->false_iter = false_iter;
+
+	this->limit = limit;
+}
+
+bool Creature::Action_condition_by_Creature_energy_global::use()
+{
+	if (get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, this->to_dir == DIRECTION::UNDER ? DIRECTION::UNDER : turn(this->creature->dir, this->to_dir)))->get_Creature_energy() >= this->limit) {
+		this->creature->iter = this->true_iter;
+	}
+	else {
+		this->creature->iter = this->false_iter;
+	}
+
+	return false;
+}
+
+bool Creature::Action_condition_by_Creature_energy_global::mutation()
+{
+	switch (rand() % 4)
+	{
+	case 0:
+		this->true_iter = rand() % this->creature->brain.size();
+		break;
+	case 1:
+		this->false_iter = rand() % this->creature->brain.size();
+		break;
+	case 2:
+	{
+		int tmp = rand() % 5;
+		this->to_dir = DIRECTION(tmp == 4 ? 4 : (tmp - 4));
+		break;
+	}
+	case 3:
+		this->limit = rand() % limit_energy;
+		break;
+	}
+
+	return true;
+}
+
+std::string* Creature::Action_condition_by_Creature_energy_global::draw_myself()
+{
+	return new std::string[5]
+	{
+		"У существа",
+		string_by_dir_for_condition(this->to_dir),
+		std::to_string(this->limit),
+		std::to_string(this->true_iter),
+		std::to_string(this->false_iter)
+	};
+}
+
+void Creature::Action_condition_by_Creature_energy_global::write_myself(std::string* out)
+{
+	*out +=
+		std::to_string(this->get_TYPE_ACTION())
+		+ ';' + std::to_string(this->to_dir)
+		+ ';' + std::to_string(this->limit)
+		+ ';' + std::to_string(this->true_iter)
+		+ ';' + std::to_string(this->false_iter)
+		+ ';';
+}
+
+TYPE_ACTION Creature::Action_condition_by_Creature_energy_global::get_TYPE_ACTION()
+{
+	return TYPE_ACTION::CONDITION_BY_CREATURE_ENERGY;
+}
+
 
 
 

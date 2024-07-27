@@ -65,9 +65,50 @@ void StartStep(HWND hWnd)
 	SetWindowTextA(ButtonStop, LPCSTR("Остановить"));
 }
 
+void ResetMap(HWND hWnd){
+	StopStep(hWnd);
+
+	DestroyObject();
+
+	char new_size_map_str[5];
+
+	int new_size_map_int = 0;
+	int size = GetWindowTextA(EditSizeMapX, new_size_map_str, 5);
+	for (int i = 0; i < size; i++)
+	{
+		if ('0' <= new_size_map_str[i] && new_size_map_str[i] <= '9') {
+			new_size_map_int = new_size_map_int * 10 + new_size_map_str[i] - '0';
+		}
+	}
+	if (new_size_map_int > 0) {
+		size_map_x = new_size_map_int;
+	}
+	new_size_map_int = 0;
+	size = GetWindowTextA(EditSizeMapY, new_size_map_str, 5);
+	for (int i = 0; i < size; i++)
+	{
+		if ('0' <= new_size_map_str[i] && new_size_map_str[i] <= '9') {
+			new_size_map_int = new_size_map_int * 10 + new_size_map_str[i] - '0';
+		}
+	}
+	if (new_size_map_int > 0) {
+		size_map_y = new_size_map_int;
+	}
+
+	CountStep = 0;
+	BuildObject();
+
+	SetWindowTextA(EditSizeMapX, LPCSTR(std::to_string(size_map_x).c_str()));
+	SetWindowTextA(EditSizeMapY, LPCSTR(std::to_string(size_map_y).c_str()));
+
+	DrawInterface();
+
+	UpdateSizeScreen(hWnd, size_screen_x, size_screen_y, true);
+}
 
 
 void Draw(HDC hdc) {
+
 	if (PosSliderStepDraw != MaxPosSliderStepDraw) {
 		for (int i = 0; i < size_map_x; i++)
 		{
@@ -77,7 +118,7 @@ void Draw(HDC hdc) {
 			}
 		}
 
-		BitBlt(hdc, margin_x, margin_y, size_cell * size_map_x, size_cell * size_map_y, SupHdc, 0, 0, SRCCOPY);
+		BitBlt(hdc, margin_x + FlagFullscreen * (size_screen_x - 2 * margin_x - size_cell * size_map_x) / 2, margin_y + FlagFullscreen * (size_screen_y - 2 * margin_y - size_cell * size_map_y) / 2, size_cell * size_map_x, size_cell * size_map_y, SupHdc, 0, 0, SRCCOPY);
 	}
 }
 
@@ -109,27 +150,34 @@ void DrawInterface() {
 }
 
 
-void UpdateDraw(HWND hWnd)
+void FullUpdateDraw(HWND hWnd)
 {
-	RECT update{ margin_x, margin_y, margin_x + size_cell * size_map_x, margin_y + size_cell * size_map_y };
-	InvalidateRect(hWnd, &update, false);
+	UpdateDraw(hWnd);
 	DrawInterface();
+}
+
+void UpdateDraw(HWND hWnd) {
+	int x = margin_x + FlagFullscreen * (size_screen_x - 2 * margin_x - size_cell * size_map_x) / 2;
+	int y = margin_y + FlagFullscreen * (size_screen_y - 2 * margin_y - size_cell * size_map_y) / 2;
+	RECT update{ x, y, x + size_cell * size_map_x, y + size_cell * size_map_y };
+	InvalidateRect(hWnd, &update, false);
 }
 
 void UpdateSizeScreen(HWND hWnd, const int size_x, const int size_y, bool flag_always)
 {
 	size_screen_x = size_x;
 	size_screen_y = size_y;
-	int size_cell_by_x = (size_screen_x - 220 - margin_x * 3) / size_map_x;
-	int size_cell_by_y = (size_screen_y - 136 - margin_y * 3) / size_map_y;
+	int size_cell_by_x = (size_screen_x - (FlagFullscreen ? (margin_x * 2) : (220 + margin_x * 3))) / size_map_x;
+	int size_cell_by_y = (size_screen_y - (FlagFullscreen ? (margin_y * 2) : (136 + margin_y * 3))) / size_map_y;
 	int tmp_size_cell = min(size_cell_by_x, size_cell_by_y);
-	tmp_size_cell -= tmp_size_cell % 2;
+	tmp_size_cell -= (tmp_size_cell % 2 == 0);         // делаем клетку нечётной
 	tmp_size_cell = max(MinSizeCell, tmp_size_cell);   // иначе проверку на отриц
 
 
 	if (tmp_size_cell != size_cell || flag_always) {
 		size_cell = tmp_size_cell;
-		size_half_cell = size_cell / 2;
+		size_half_cell = (size_cell + 1) / 2;
+		size_creature_radius = round(size_cell * CreatureRadiusCoeff);
 
 		SelectObject(SupHdc, GetStockObject(NULL_BRUSH));
 
@@ -147,7 +195,7 @@ void UpdateSizeScreen(HWND hWnd, const int size_x, const int size_y, bool flag_a
 		EndPaint(hWnd, &ps);
 
 
-		//UpdateDraw(hWnd);
+		//FullUpdateDraw(hWnd);
 		if (!position_WM_SETREDRAW) { SendMessage(hWnd, WM_SETREDRAW, true, 0); }  // включить отрисовку но не поднимать флаг - в WM_PAINT отрисовка выключится так как флаг опущен
 
 		//RedrawWindow(hWnd, NULL, NULL, RDW_ERASE | RDW_FRAME | RDW_INVALIDATE | RDW_ALLCHILDREN);
@@ -172,66 +220,68 @@ void UpdateSizeScreen(HWND hWnd, const int size_x, const int size_y, bool flag_a
 void MoveWidget()
 {
 	int height = margin_y;
+	int width = margin_x * 2 + size_map_x * size_cell + FlagFullscreen * size_screen_x;
 
-	SetWindowPos(StaticCountStep, nullptr, margin_x * 2 + size_map_x * size_cell, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(ButtonStop, nullptr, margin_x * 2 + size_map_x * size_cell + 60, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticCountStep, nullptr, width, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(ButtonStop, nullptr, width + 60, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
-	SetWindowPos(CheckBoxAutomaticStop, nullptr, margin_x * 2 + size_map_x * size_cell, height += 30, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(CheckBoxAutomaticStop, nullptr, width, height += 30, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(CheckBoxAutomaticReset, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
-	SetWindowPos(StaticTimeDrawMain, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(SliderTimeDraw, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(StaticTimeDrawLeft, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(StaticTimeDrawRight, nullptr, margin_x * 2 + size_map_x * size_cell + 120, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticTimeDrawMain, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(SliderTimeDraw, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticTimeDrawLeft, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticTimeDrawRight, nullptr, width + 120, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
-	SetWindowPos(StaticStepDrawMain, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(SliderStepDraw, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(StaticStepDrawLeft, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(StaticStepDrawRight, nullptr, margin_x * 2 + size_map_x * size_cell + 120, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticStepDrawMain, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(SliderStepDraw, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticStepDrawLeft, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticStepDrawRight, nullptr, width + 120, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
 
 
-	SetWindowPos(CheckBoxRandDivision, nullptr, margin_x * 2 + size_map_x * size_cell, height += 50, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(CheckBoxRandDivision, nullptr, width, height += 50, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
-	SetWindowPos(StaticRedEat, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(SliderRedEat, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticRedEat, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(SliderRedEat, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
-	SetWindowPos(StaticRedLeave, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(SliderRedLeave, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticRedLeave, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(SliderRedLeave, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
-	SetWindowPos(StaticGreenEat, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(SliderGreenEat, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticGreenEat, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(SliderGreenEat, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
-	SetWindowPos(StaticBlueEat, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(SliderBlueEat, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);	
+	SetWindowPos(StaticBlueEat, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(SliderBlueEat, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);	
 
-	SetWindowPos(StaticAllLose, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(SliderAllLose, nullptr, margin_x * 2 + size_map_x * size_cell, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticAllLose, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(SliderAllLose, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
 
 	if (peep_Creature != nullptr) {
 		peep_Creature->draw_brain();
 	}
-	SetWindowPos(StaticCountCreature, nullptr, margin_x * 2 + size_map_x * size_cell, height += 50, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(StaticCountCreature, nullptr, width, height += 50, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
-	SetWindowPos(ButtonReset, nullptr, margin_x * 2 + size_map_x * size_cell + 60, height += 30, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(ButtonReset, nullptr, width + 60, height += 30, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
-	SetWindowPos(ButtonSafeMap, nullptr, margin_x * 2 + size_map_x * size_cell, height += 30, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(ButtonLoadMap, nullptr, margin_x * 2 + size_map_x * size_cell + 115, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(ButtonSafeMap, nullptr, width, height += 30, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(ButtonLoadMap, nullptr, width + 115, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
-	SetWindowPos(EditSizeMapX, nullptr, margin_x * 2 + size_map_x * size_cell, height += 30, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(EditSizeMapY, nullptr, margin_x * 2 + size_map_x * size_cell + 115, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(EditSizeMapX, nullptr, width, height += 30, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(EditSizeMapY, nullptr, width + 115, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 	
 
+	height = margin_y * 2 + size_map_y * size_cell + FlagFullscreen * size_screen_y;
+
+	SetWindowPos(StaticPeepData, nullptr, margin_x, height, size_map_x * size_cell, 20, SWP_NOOWNERZORDER | SWP_NOZORDER);
+
+	SetWindowPos(StaticPeepBrainHeader, nullptr, margin_x, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(SliderPeepBrain, nullptr, margin_x + size_map_x * size_cell / 3, height += 96, size_map_x * size_cell / 3, 20, SWP_NOOWNERZORDER | SWP_NOZORDER);
 
 
-	SetWindowPos(StaticPeepData, nullptr, margin_x, margin_y * 2 + size_map_y * size_cell, size_map_x * size_cell, 20, SWP_NOOWNERZORDER | SWP_NOZORDER);
-
-	SetWindowPos(StaticPeepBrainHeader, nullptr, margin_x, margin_y * 2 + size_map_y * size_cell + 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(SliderPeepBrain, nullptr, margin_x + size_map_x * size_cell / 3, margin_y * 2 + size_map_y * size_cell + 116, size_map_x * size_cell / 3, 20, SWP_NOOWNERZORDER | SWP_NOZORDER);
-
-
-	SetWindowPos(ButtonSafeCrt, nullptr, margin_x + (size_map_x * size_cell / 3 - 150) / 2, margin_y * 2 + size_map_y * size_cell + 116, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(ButtonLoadCrt, nullptr, margin_x + size_map_x * size_cell * 2 / 3 + (size_map_x * size_cell / 3 - 150) / 2, margin_y * 2 + size_map_y * size_cell + 116, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(ButtonSafeCrt, nullptr, margin_x + (size_map_x * size_cell / 3 - 150) / 2, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+	SetWindowPos(ButtonLoadCrt, nullptr, margin_x + size_map_x * size_cell * 2 / 3 + (size_map_x * size_cell / 3 - 150) / 2, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 }
 
 void UpdateWidget()
@@ -240,6 +290,7 @@ void UpdateWidget()
 	UpdateWindow(ButtonStop);
 
 	UpdateWindow(CheckBoxAutomaticStop);
+	UpdateWindow(CheckBoxAutomaticReset);
 
 	UpdateWindow(StaticTimeDrawMain);
 	UpdateWindow(SliderTimeDraw);
@@ -299,84 +350,87 @@ void UpdateWidget()
 
 void BuildWidget(HWND hWnd) {
 	int height = margin_y;
+	int width = margin_x * 2 + size_map_x * size_cell + FlagFullscreen * size_screen_x;
 
-	StaticCountStep = CreateWindowA("STATIC", "ШАГ: 0", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell, height, 220, 20, hWnd, NULL, NULL, NULL);
-	ButtonStop = CreateWindowA("BUTTON", "Начать", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell + 60, height += 20, 100, 20, hWnd, HMENU(IndexButtonStop), NULL, NULL);
+	StaticCountStep = CreateWindowA("STATIC", "ШАГ: 0", WS_VISIBLE | WS_CHILD | ES_CENTER, width, height, 220, 20, hWnd, NULL, NULL, NULL);
+	ButtonStop = CreateWindowA("BUTTON", "Начать", WS_VISIBLE | WS_CHILD | ES_CENTER, width + 60, height += 20, 100, 20, hWnd, HMENU(IndexButtonStop), NULL, NULL);
 	//SendMessage(ButtonStop, WM_CHANGEUISTATE, (WPARAM)(0x10001), (LPARAM)(0));
 
-	CheckBoxAutomaticStop = CreateWindowA("BUTTON", "Остановка при вымирании", WS_VISIBLE | WS_CHILD | ES_CENTER | BS_CHECKBOX, margin_x * 2 + size_map_x * size_cell, height += 30, 220, 20, hWnd, HMENU(IndexCheckBoxAutomaticStop), NULL, NULL);
+	CheckBoxAutomaticStop = CreateWindowA("BUTTON", "Остановка при вымирании", WS_VISIBLE | WS_CHILD | ES_CENTER | BS_CHECKBOX, width, height += 30, 220, 20, hWnd, HMENU(IndexCheckBoxAutomaticStop), NULL, NULL);
 	SendMessage(CheckBoxAutomaticStop, BM_SETCHECK, FlagAutomaticStop, 0);
 
-	StaticTimeDrawMain = CreateWindowA("STATIC", "Время кадра", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
-	SliderTimeDraw = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	CheckBoxAutomaticReset = CreateWindowA("BUTTON", "Пересоздать при вымирании", WS_VISIBLE | WS_CHILD | ES_CENTER | BS_CHECKBOX, width, height += 20, 220, 20, hWnd, HMENU(IndexCheckBoxAutomaticReset), NULL, NULL);
+	SendMessage(CheckBoxAutomaticReset, BM_SETCHECK, FlagAutomaticReset, 0);
+
+	StaticTimeDrawMain = CreateWindowA("STATIC", "Время кадра", WS_VISIBLE | WS_CHILD | ES_CENTER, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	SliderTimeDraw = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
 	SetScrollRange(SliderTimeDraw, SB_CTL, 1, MaxPosSliderTimeDraw, TRUE);
 	SetScrollPos(SliderTimeDraw, SB_CTL, PosSliderTimeDraw, TRUE);
-	StaticTimeDrawLeft = CreateWindowA("STATIC", "быстро", WS_VISIBLE | WS_CHILD | ES_LEFT, margin_x * 2 + size_map_x * size_cell, height += 20, 100, 16, hWnd, NULL, NULL, NULL);
-	StaticTimeDrawRight = CreateWindowA("STATIC", "долго", WS_VISIBLE | WS_CHILD | ES_RIGHT, margin_x * 2 + size_map_x * size_cell + 120, height, 100, 16, hWnd, NULL, NULL, NULL);
+	StaticTimeDrawLeft = CreateWindowA("STATIC", "быстро", WS_VISIBLE | WS_CHILD | ES_LEFT, width, height += 20, 100, 16, hWnd, NULL, NULL, NULL);
+	StaticTimeDrawRight = CreateWindowA("STATIC", "долго", WS_VISIBLE | WS_CHILD | ES_RIGHT, width + 120, height, 100, 16, hWnd, NULL, NULL, NULL);
 	// SS_SIMPLE  SS_WHITEFRAME  
 
-	StaticStepDrawMain = CreateWindowA("STATIC", "Пропущено кадкор", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
-	SliderStepDraw = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	StaticStepDrawMain = CreateWindowA("STATIC", "Пропущено кадкор", WS_VISIBLE | WS_CHILD | ES_CENTER, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	SliderStepDraw = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
 	SetScrollRange(SliderStepDraw, SB_CTL, 1, MaxPosSliderStepDraw, TRUE);
 	SetScrollPos(SliderStepDraw, SB_CTL, PosSliderStepDraw, TRUE);
-	StaticStepDrawLeft = CreateWindowA("STATIC", "ни одного", WS_VISIBLE | WS_CHILD | ES_LEFT, margin_x * 2 + size_map_x * size_cell, height += 20, 100, 20, hWnd, NULL, NULL, NULL);
-	StaticStepDrawRight = CreateWindowA("STATIC", "без отрисовки", WS_VISIBLE | WS_CHILD | ES_RIGHT, margin_x * 2 + size_map_x * size_cell + 120, height, 100, 20, hWnd, NULL, NULL, NULL);
+	StaticStepDrawLeft = CreateWindowA("STATIC", "ни одного", WS_VISIBLE | WS_CHILD | ES_LEFT, width, height += 20, 100, 20, hWnd, NULL, NULL, NULL);
+	StaticStepDrawRight = CreateWindowA("STATIC", "без отрисовки", WS_VISIBLE | WS_CHILD | ES_RIGHT, width + 120, height, 100, 20, hWnd, NULL, NULL, NULL);
 
 
-	CheckBoxRandDivision = CreateWindowA("BUTTON", "Деление в случайное место", WS_VISIBLE | WS_CHILD | ES_CENTER | BS_CHECKBOX, margin_x * 2 + size_map_x * size_cell, height += 50, 220, 20, hWnd, HMENU(IndexCheckBoxRandDivision), NULL, NULL);
+	CheckBoxRandDivision = CreateWindowA("BUTTON", "Деление в случайное место", WS_VISIBLE | WS_CHILD | ES_CENTER | BS_CHECKBOX, width, height += 50, 220, 20, hWnd, HMENU(IndexCheckBoxRandDivision), NULL, NULL);
 	SendMessage(CheckBoxRandDivision, BM_SETCHECK, FlagRandDivision, 0);
 
-	StaticRedEat = CreateWindowA("STATIC", ("Красный ест: " + std::to_string(PosSliderRedEat) + "%").c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
-	SliderRedEat = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	StaticRedEat = CreateWindowA("STATIC", ("Красный ест: " + std::to_string(PosSliderRedEat) + "%").c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	SliderRedEat = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
 	SetScrollRange(SliderRedEat, SB_CTL, 0, MaxPosSliderRedEat, TRUE);
 	SetScrollPos(SliderRedEat, SB_CTL, PosSliderRedEat, TRUE);
 
-	StaticRedLeave = CreateWindowA("STATIC", ("Красный оставляет: " + std::to_string(PosSliderRedLeave) + "%").c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
-	SliderRedLeave = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	StaticRedLeave = CreateWindowA("STATIC", ("Красный оставляет: " + std::to_string(PosSliderRedLeave) + "%").c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	SliderRedLeave = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
 	SetScrollRange(SliderRedLeave, SB_CTL, 0, MaxPosSliderRedLeave, TRUE);
 	SetScrollPos(SliderRedLeave, SB_CTL, PosSliderRedLeave, TRUE);
 
-	StaticGreenEat = CreateWindowA("STATIC", ("Зелёный ест: " + std::to_string(PosSliderGreenEat) + "%").c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
-	SliderGreenEat = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	StaticGreenEat = CreateWindowA("STATIC", ("Зелёный ест: " + std::to_string(PosSliderGreenEat) + "%").c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	SliderGreenEat = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
 	SetScrollRange(SliderGreenEat, SB_CTL, 0, MaxPosSliderGreenEat, TRUE);
 	SetScrollPos(SliderGreenEat, SB_CTL, PosSliderGreenEat, TRUE);
 
-	StaticBlueEat = CreateWindowA("STATIC", ("Синий ест: " + std::to_string(PosSliderBlueEat) + "%").c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
-	SliderBlueEat = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	StaticBlueEat = CreateWindowA("STATIC", ("Синий ест: " + std::to_string(PosSliderBlueEat) + "%").c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	SliderBlueEat = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
 	SetScrollRange(SliderBlueEat, SB_CTL, 0, MaxPosSliderBlueEat, TRUE);
 	SetScrollPos(SliderBlueEat, SB_CTL, PosSliderBlueEat, TRUE);
 
-	StaticAllLose = CreateWindowA("STATIC", ("Все теряют: " + std::to_string(PosSliderAllLose) + "%").c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
-	SliderAllLose = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, margin_x * 2 + size_map_x * size_cell, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	StaticAllLose = CreateWindowA("STATIC", ("Все теряют: " + std::to_string(PosSliderAllLose) + "%").c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
+	SliderAllLose = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, width, height += 20, 220, 20, hWnd, NULL, NULL, NULL);
 	SetScrollRange(SliderAllLose, SB_CTL, 0, MaxPosSliderAllLose, TRUE);
 	SetScrollPos(SliderAllLose, SB_CTL, PosSliderAllLose, TRUE);
 
-	StaticCountCreature = CreateWindowA("STATIC", "R: 0  G: 0  B: 0", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell, height += 50, 220, 20, hWnd, NULL, NULL, NULL);
+	StaticCountCreature = CreateWindowA("STATIC", "R: 0  G: 0  B: 0", WS_VISIBLE | WS_CHILD | ES_CENTER, width, height += 50, 220, 20, hWnd, NULL, NULL, NULL);
 
-	ButtonReset = CreateWindowA("BUTTON", "Пересоздать", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell + 60, height += 30, 100, 20, hWnd, HMENU(IndexButtonReset), NULL, NULL);
+	ButtonReset = CreateWindowA("BUTTON", "Пересоздать", WS_VISIBLE | WS_CHILD | ES_CENTER, width + 60, height += 30, 100, 20, hWnd, HMENU(IndexButtonReset), NULL, NULL);
 
-	ButtonSafeMap = CreateWindowA("BUTTON", "Сохранить мир", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell, height += 30, 105, 20, hWnd, HMENU(IndexButtonSafeMap), NULL, NULL);
-	ButtonLoadMap = CreateWindowA("BUTTON", "Загрузить мир", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell + 115, height, 105, 20, hWnd, HMENU(IndexButtonLoadMap), NULL, NULL);
+	ButtonSafeMap = CreateWindowA("BUTTON", "Сохранить мир", WS_VISIBLE | WS_CHILD | ES_CENTER, width, height += 30, 105, 20, hWnd, HMENU(IndexButtonSafeMap), NULL, NULL);
+	ButtonLoadMap = CreateWindowA("BUTTON", "Загрузить мир", WS_VISIBLE | WS_CHILD | ES_CENTER, width + 115, height, 105, 20, hWnd, HMENU(IndexButtonLoadMap), NULL, NULL);
 
-	EditSizeMapX = CreateWindowA("EDIT", std::to_string(size_map_x).c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell, height += 30, 105, 16, hWnd, NULL, NULL, NULL);
+	EditSizeMapX = CreateWindowA("EDIT", std::to_string(size_map_x).c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, width, height += 30, 105, 16, hWnd, NULL, NULL, NULL);
 	Edit_LimitText(EditSizeMapX, 4);
-	EditSizeMapY = CreateWindowA("EDIT", std::to_string(size_map_y).c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x * 2 + size_map_x * size_cell + 115, height, 105, 16, hWnd, NULL, NULL, NULL);
+	EditSizeMapY = CreateWindowA("EDIT", std::to_string(size_map_y).c_str(), WS_VISIBLE | WS_CHILD | ES_CENTER, width + 115, height, 105, 16, hWnd, NULL, NULL, NULL);
 	Edit_LimitText(EditSizeMapY, 4);
 
-	height_right_interface = height + 16 + margin_y; // !!!!
 
+	height = margin_y * 2 + size_map_y * size_cell + FlagFullscreen * size_screen_y;
 
+	StaticPeepData = CreateWindowA("STATIC", "Энергия: 0 Возраст: 0  Направление: -  Действие: 0  Живо: нет", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x, height, size_map_x * size_cell, 20, hWnd, NULL, NULL, NULL);
 
-	StaticPeepData = CreateWindowA("STATIC", "Энергия: 0 Возраст: 0  Направление: -  Действие: 0  Живо: нет", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x, margin_y * 2 + size_map_y * size_cell, size_map_x * size_cell, 20, hWnd, NULL, NULL, NULL);
-
-	StaticPeepBrainHeader = CreateWindowA("STATIC", "Номер\n�?мя\nНапр\nЗнач\nДа\nНет\n", WS_VISIBLE | WS_CHILD | ES_LEFT, margin_x, margin_y * 2 + size_map_y * size_cell + 20, 43, 96, hWnd, NULL, NULL, NULL);
-	SliderPeepBrain = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, margin_x + size_map_x * size_cell / 3, margin_y * 2 + size_map_y * size_cell + 116, size_map_x * size_cell / 3, 20, hWnd, NULL, NULL, NULL);
+	StaticPeepBrainHeader = CreateWindowA("STATIC", "Номер\nИмя\nНапр\nЗнач\nДа\nНет\n", WS_VISIBLE | WS_CHILD | ES_LEFT, margin_x, height += 20, 43, 96, hWnd, NULL, NULL, NULL);
+	SliderPeepBrain = CreateWindowA("SCROLLBAR", NULL, WS_VISIBLE | WS_CHILD | SBS_HORZ, margin_x + size_map_x * size_cell / 3, height += 96, size_map_x * size_cell / 3, 20, hWnd, NULL, NULL, NULL);
 	SetScrollRange(SliderPeepBrain, SB_CTL, 0, MaxPosSliderPeepBrain, TRUE);
 	SetScrollPos(SliderPeepBrain, SB_CTL, PosSliderPeepBrain, TRUE);
 
-	ButtonSafeCrt = CreateWindowA("BUTTON", "Сохранить существо", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x + (size_map_x * size_cell / 3 - 150) / 2, margin_y * 2 + size_map_y * size_cell + 116, 150, 20, hWnd, HMENU(IndexButtonSafeCrt), NULL, NULL);
-	ButtonLoadCrt = CreateWindowA("BUTTON", "Загрузить существо", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x + size_map_x * size_cell * 2 / 3 + (size_map_x * size_cell / 3 - 150) / 2, margin_y * 2 + size_map_y * size_cell + 116, 150, 20, hWnd, HMENU(IndexButtonLoadCrt), NULL, NULL);
-	//StaticPeepData = CreateWindowA("STATIC", "_______________________________________________________________________________________________________________________________________", WS_VISIBLE | WS_CHILD | ES_LEFT, margin_x, margin_y * 2 + size_map_y * size_cell + 100, size_map_x * size_cell, 20, hWnd, NULL, NULL, NULL);
+	ButtonSafeCrt = CreateWindowA("BUTTON", "Сохранить существо", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x + (size_map_x * size_cell / 3 - 150) / 2, height, 150, 20, hWnd, HMENU(IndexButtonSafeCrt), NULL, NULL);
+	ButtonLoadCrt = CreateWindowA("BUTTON", "Загрузить существо", WS_VISIBLE | WS_CHILD | ES_CENTER, margin_x + size_map_x * size_cell * 2 / 3 + (size_map_x * size_cell / 3 - 150) / 2, height, 150, 20, hWnd, HMENU(IndexButtonLoadCrt), NULL, NULL);
+	//StaticPeepData = CreateWindowA("STATIC", "_______________________________________________________________________________________________________________________________________", WS_VISIBLE | WS_CHILD | ES_LEFT, margin_x, height + 100, size_map_x * size_cell, 20, hWnd, NULL, NULL, NULL);
 }
 
 void BuildObject() {
@@ -392,13 +446,13 @@ void BuildObject() {
 
 			switch (rand() % 4)
 			{
-			case TYPE_CREATURE::Plant:
+			case TYPE_CREATURE::PLANT:
 				map[i][j].set_Creature(new Creature_Plant({i, j}, start_energy, DIRECTION(rand() % 4), rand() % limit_age));
 				break;
-			case TYPE_CREATURE::Herbivore:
+			case TYPE_CREATURE::HERBIVORE:
 				map[i][j].set_Creature(new Creature_Herbivore({ i, j }, start_energy, DIRECTION(rand() % 4), rand() % limit_age));
 				break;
-			case TYPE_CREATURE::Scavenger:
+			case TYPE_CREATURE::SCAVENGER:
 				map[i][j].set_Creature(new Creature_Scavenger({ i, j }, start_energy, DIRECTION(rand() % 4), rand() % limit_age));
 				break;
 			default:
@@ -408,7 +462,7 @@ void BuildObject() {
 	}
 
 	//std::vector<Action*> br;
-	//br.push_back(new Action_condition_by_Cell(nullptr, DIRECTION::UNDER, 3, 1, 400));
+	//br.push_back(new Action_condition_by_Cell_energy(nullptr, DIRECTION::UNDER, 3, 1, 400));
 	//br.push_back(new Action_eat(nullptr));
 	//br.push_back(new Action_change_iter(nullptr, 0));
 	//br.push_back(new Action_go(nullptr));
@@ -500,6 +554,7 @@ void DestroyWidget(HWND hWnd) {
 	DestroyWindow(ButtonStop);
 
 	DestroyWindow(CheckBoxAutomaticStop);
+	DestroyWindow(CheckBoxAutomaticReset);
 
 	DestroyWindow(StaticTimeDrawMain);
 	DestroyWindow(SliderTimeDraw);
@@ -667,19 +722,16 @@ std::string string_by_type_creature(TYPE_CREATURE type_creature)
 {
 	switch (type_creature)
 	{
-	case TYPE_CREATURE::Plant:
+	case TYPE_CREATURE::PLANT:
 		return "Растение";
-		break;
-	case TYPE_CREATURE::Herbivore:
+	case TYPE_CREATURE::HERBIVORE:
 		return "Хищник";
-		break;
-	case TYPE_CREATURE::Scavenger:
+	case TYPE_CREATURE::SCAVENGER:
 		return "Падальщик";
-		break;
 	case TYPE_CREATURE::Void:
 		return "Никого";
-		break;
 	}
+	return "???";
 }
 
 
@@ -689,32 +741,24 @@ std::string string_by_dir_for_condition(DIRECTION dir)
 	{
 	case DIRECTION::to_FORWARD:
 		return "Спереди";
-		break;
 	case DIRECTION::to_RIGHT:
 		return "Справа";
-		break;
 	case DIRECTION::to_LEFT:
 		return "Слева";
-		break;
 	case DIRECTION::to_BACK:
 		return "Сзади";
-		break;
 	case DIRECTION::UP:
 		return "Верх";
-		break;
 	case DIRECTION::RIGHT:
 		return "Право";
-		break;
 	case DIRECTION::DOWN:
 		return "Низ";
-		break;
 	case DIRECTION::LEFT:
 		return "Лево";
-		break;
 	case DIRECTION::UNDER:
 		return "Снизу";
-		break;
 	}
+	return "???";
 }
 
 std::string string_by_dir_for_turn(DIRECTION dir)
@@ -723,32 +767,25 @@ std::string string_by_dir_for_turn(DIRECTION dir)
 	{
 	case DIRECTION::to_FORWARD:
 		return "Вперёд";
-		break;
 	case DIRECTION::to_RIGHT:
 		return "Направо";
-		break;
 	case DIRECTION::to_LEFT:
 		return "Налево";
-		break;
 	case DIRECTION::to_BACK:
 		return "Назад";
-		break;
 	case DIRECTION::UP:
 		return "Верх";
-		break;
 	case DIRECTION::RIGHT:
 		return "Право";
-		break;
 	case DIRECTION::DOWN:
 		return "Низ";
-		break;
 	case DIRECTION::LEFT:
 		return "Лево";
-		break;
 	case DIRECTION::UNDER:
 		return "Снизу";
-		break;
 	}
+
+	return "???";
 }
 
 

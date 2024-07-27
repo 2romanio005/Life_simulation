@@ -48,17 +48,17 @@ void Cell::draw_myself(HDC hdc)
 	std::pair<int, int> cord(this->map_cord.first * size_cell, this->map_cord.second * size_cell);
 
 	SelectObject(hdc, P_Null);
-	SelectObject(hdc, H_Gray[min(this->free_energy / (limit_energy / 200), 199)]);
+	SelectObject(hdc, H_Gray[(std::min)(this->free_energy / (limit_energy / 200), 199)]);
 	Rectangle(hdc, cord.first, cord.second, cord.first + size_cell + 1, cord.second + size_cell + 1);
 
 	if (this->creature != nullptr) {
 		this->creature->draw_myself(hdc, cord);
 
 		if (this->creature == peep_Creature) {
-			int r = int(size_cell * 0.25);
+			int r = int(size_cell * (CreatureRadiusCoeff - 0.1));
 			cord.first += size_half_cell; cord.second += size_half_cell;
 			SelectObject(hdc, H_Gray[0]);
-			RoundRect(hdc, cord.first - r, cord.second - r, cord.first + r, cord.second + r, r * 2, r * 2);
+			RoundRect(hdc, cord.first - r, cord.second - r, cord.first + r, cord.second + r, r * 2 - 2, r * 2 - 2);
 		}
 	}
 }
@@ -97,7 +97,10 @@ TYPE_CREATURE Cell::get_TYPE_CREATURE()
 
 int Cell::get_Creature_energy()
 {
-	return this->creature->get_energy();
+	if (this->creature != nullptr) {
+		return this->creature->get_energy();
+	}
+	return 0;
 }
 
 Creature* Cell::get_Creature()
@@ -109,6 +112,11 @@ void Cell::change_free_energy(int step)
 {
 	this->free_energy = this->free_energy + step;
 	if (this->free_energy < 0) this->free_energy = 0;
+}
+
+void Cell::set_free_energy(int free_energy)
+{
+	this->free_energy = max(0, free_energy);
 }
 
 void Cell::set_Creature(Creature* creature)

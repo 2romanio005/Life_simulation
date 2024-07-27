@@ -70,16 +70,17 @@ bool Creature_Herbivore::Action_multiply::use()
 
 			std::vector<Action*>* br = copy_brain(static_cast<Creature_Herbivore*>(this->creature)->brain);
 
-			if (rand() % 100 < mut_chence) {    // мутация
-				int mut_iter = rand() % (static_cast<Creature_Herbivore*>(this->creature)->brain.size() + 1);
-				static_cast<Creature_Herbivore*>(this->creature)->brain_mutation(min(mut_iter, max_brain_size), br);
+			if (rand() % 100 < mut_chance) {    // мутация
+				int tmp = (static_cast<Creature_Herbivore*>(this->creature)->brain.size() + 1);
+				int mut_iter = rand() % min(tmp, max_brain_size);
+				static_cast<Creature_Herbivore*>(this->creature)->brain_mutation(br, mut_iter);
 			}
 
-			near_place->set_Creature(new Creature_Herbivore(near_place->get_map_cord(), static_cast<Creature_Herbivore*>(this->creature)->energy, DIRECTION(rand() % 4), 0, br));
+			near_place->set_Creature(new Creature_Herbivore(near_place->get_map_cord(), static_cast<Creature_Herbivore*>(this->creature)->energy, DIRECTION(rand() % 4), rand() % br->size(), br));
 			delete br;
 		}
 	}
-
+		
 	static_cast<Creature_Herbivore*>(this->creature)->next_iter();
 	return true;
 }
@@ -94,14 +95,6 @@ Creature_Herbivore::Action_turn::Action_turn(Creature_Herbivore* creature, DIREC
 {
 }
 
-bool Creature_Herbivore::Action_turn::use()
-{
-	static_cast<Creature_Herbivore*>(this->creature)->dir = turn(static_cast<Creature_Herbivore*>(this->creature)->dir, this->to_dir);
-
-	static_cast<Creature_Herbivore*>(this->creature)->next_iter();
-	return false;
-}
-
 Action* Creature_Herbivore::Action_turn::copy()
 {
 	return new Action_turn(static_cast<Creature_Herbivore*>(this->creature), this->to_dir);
@@ -112,43 +105,29 @@ Creature_Herbivore::Action_condition_by_TYPE_CREATURE::Action_condition_by_TYPE_
 {
 }
 
-bool Creature_Herbivore::Action_condition_by_TYPE_CREATURE::use()
-{
-	if (get_Cell_by_map_cord(near_cell_cord(static_cast<Creature_Herbivore*>(this->creature)->map_cord, turn(static_cast<Creature_Herbivore*>(this->creature)->dir, this->to_dir)))->get_TYPE_CREATURE() == this->type_creature) {
-		static_cast<Creature_Herbivore*>(this->creature)->iter = this->true_iter;
-	}
-	else {
-		static_cast<Creature_Herbivore*>(this->creature)->iter = this->false_iter;
-	}
-
-	return false;
-}
-
 Action* Creature_Herbivore::Action_condition_by_TYPE_CREATURE::copy()
 {
 	return new Action_condition_by_TYPE_CREATURE(static_cast<Creature_Herbivore*>(this->creature), this->to_dir, this->true_iter, this->false_iter, this->type_creature);
 }
 
 
-Creature_Herbivore::Action_condition_by_Cell::Action_condition_by_Cell(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit) : Action_condition_by_Cell_global(creature, to_dir, true_iter, false_iter, limit)
+Creature_Herbivore::Action_condition_by_Cell_energy::Action_condition_by_Cell_energy(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit) :  Action_condition_by_Cell_energy_global(creature, to_dir, true_iter, false_iter, limit)
 {
 }
 
-bool Creature_Herbivore::Action_condition_by_Cell::use()
+Action* Creature_Herbivore::Action_condition_by_Cell_energy::copy()
 {
-	if (get_Cell_by_map_cord(near_cell_cord(static_cast<Creature_Herbivore*>(this->creature)->map_cord, this->to_dir == DIRECTION::UNDER ? DIRECTION::UNDER : turn(static_cast<Creature_Herbivore*>(this->creature)->dir, this->to_dir)))->get_free_energy() >= this->limit) {
-		static_cast<Creature_Herbivore*>(this->creature)->iter = this->true_iter;
-	}
-	else {
-		static_cast<Creature_Herbivore*>(this->creature)->iter = this->false_iter;
-	}
-
-	return false;
+	return new Action_condition_by_Cell_energy(static_cast<Creature_Herbivore*>(this->creature), this->to_dir, this->true_iter, this->false_iter, this->limit);
 }
 
-Action* Creature_Herbivore::Action_condition_by_Cell::copy()
+
+Creature_Herbivore::Action_condition_by_Creature_energy::Action_condition_by_Creature_energy(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit) : Action_condition_by_Creature_energy_global(creature, to_dir, true_iter, false_iter, limit)
 {
-	return new Action_condition_by_Cell(static_cast<Creature_Herbivore*>(this->creature), this->to_dir, this->true_iter, this->false_iter, this->limit);
+}
+
+Action* Creature_Herbivore::Action_condition_by_Creature_energy::copy()
+{
+	return new Action_condition_by_Creature_energy(static_cast<Creature_Herbivore*>(this->creature), this->to_dir, this->true_iter, this->false_iter, this->limit);
 }
 
 

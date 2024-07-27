@@ -1,4 +1,5 @@
 #pragma once
+#include "ENUMS.h"
 
 #include <windows.h>
 #include <WindowsX.h>
@@ -18,36 +19,7 @@ extern int size_map_x;
 extern int size_map_y;
 extern int size_cell;
 extern int size_half_cell;
-
-//#define size_cell 10
-//#define size_half_cell 5
-//#define size_map_x 93
-//#define size_map_y 47
-
-//#define size_cell 14
-//#define size_half_cell 7
-//#define size_map_x 93
-//#define size_map_y 47
-
-//#define size_cell 24
-//#define size_half_cell 12
-//#define size_map_x 46
-//#define size_map_y 23
-
-//#define size_cell 45
-//#define size_half_cell 25
-//#define size_map_x 22
-//#define size_map_y 14
-
-//#define size_cell 90
-//#define size_half_cell 50
-//#define size_map_x 11
-//#define size_map_y 7
-
-//#define size_cell 650
-//#define size_half_cell 325
-//#define size_map_x 1
-//#define size_map_y 1
+extern int size_creature_radius;
 
 
 
@@ -58,13 +30,13 @@ extern int size_half_cell;
 #define limit_age 100
 #define limit_power_step 5 // количество незаканивающих ход действий за ход
 
-#define mut_chence 5 // %
-#define mut_type_chence 0 // %
+#define mut_chance 5 // %
+//#define mut_type_chance 0 // %
 
-#define	max_brain_size 100
+#define	max_brain_size 50
 #define min_multiply_energy 3000 // минимальная энергия для деления
 
-#define start_energy 70000
+#define start_energy 5000
 #define start_max_len_brain 4
 
 
@@ -76,21 +48,18 @@ extern int size_half_cell;
 
 class Cell;
 
-enum TYPE_CREATURE;
-enum DIRECTION;
 class Creature;
 class Creature_Plant;
 class Creature_Herbivore;
 class Creature_Scavenger;
 
-enum TYPE_ACTION;
 class Action;
 class Action_go_global;
 class Action_multiply_global;
 class Action_eat_global;
 class Action_turn_global;
 class Action_condition_by_TYPE_CREATURE_global;
-class Action_condition_by_Cell_global;
+class Action_condition_by_Cell_energy_global;
 
 
 // в Creature.cpp
@@ -123,6 +92,7 @@ extern Cell** map;
 void OneStep();
 void DrawInterface();
 void Draw(HDC hdc);
+void FullUpdateDraw(HWND hWnd);
 void UpdateDraw(HWND hWnd);
 void UpdateSizeScreen(HWND hWnd, const int size_x, const int size_y, bool flag_always = false);
 void MoveWidget();
@@ -130,6 +100,7 @@ void UpdateWidget();
 
 void StopStep(HWND hWnd);
 void StartStep(HWND hWnd);
+void ResetMap(HWND hWnd);
 
 
 void BuildWidget(HWND hWnd);
@@ -146,6 +117,7 @@ void DestroyDrawEffecter(HWND hWnd);
 extern HBRUSH H_Gray[200];
 extern HBRUSH H_Green;
 extern HBRUSH H_Red;
+extern HBRUSH H_Blue;
 
 extern HPEN P_Null;
 
@@ -157,11 +129,14 @@ extern PAINTSTRUCT MainPs;
 extern HDC SupHdc;
 extern HBITMAP SupHbm;
 extern HANDLE SupHold;
-extern HBRUSH H_Blue;
 
-#define MinSizeCell 6
+#define MinSizeCell 5
+#define CreatureRadiusCoeff 0.3
 extern bool position_WM_SETREDRAW;
-extern int height_right_interface;
+
+extern bool FlagFullscreen;
+extern LONG FullscreenStyle;
+extern WINDOWPLACEMENT FullscreenPlacement;
 
 
 
@@ -169,15 +144,16 @@ extern int height_right_interface;
 
 #define IndexButtonStop 2
 #define IndexCheckBoxAutomaticStop 3
+#define IndexCheckBoxAutomaticReset 4
 
-#define IndexCheckBoxRandDivision 4
+#define IndexCheckBoxRandDivision 5
 
-#define IndexButtonReset 5
+#define IndexButtonReset 6
 
-#define IndexButtonSafeMap 6
-#define IndexButtonLoadMap 7
-#define IndexButtonSafeCrt 8
-#define IndexButtonLoadCrt 9
+#define IndexButtonSafeMap 7
+#define IndexButtonLoadMap 8
+#define IndexButtonSafeCrt 9
+#define IndexButtonLoadCrt 10
 
 
 
@@ -194,6 +170,9 @@ extern bool FlagStop;
 
 extern HWND CheckBoxAutomaticStop;
 extern bool FlagAutomaticStop;
+
+extern HWND CheckBoxAutomaticReset;
+extern bool FlagAutomaticReset;
 
 extern HWND StaticTimeDrawMain;
 extern HWND SliderTimeDraw;

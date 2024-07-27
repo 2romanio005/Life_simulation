@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Definition.h"
 #include "MainConnection.h"
 #include "Creature_Plant.h"
@@ -29,7 +29,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (!RegisterClassW(&wcex)) { return -1; }
 
-	CreateWindow(L"Life_simulation", L"Life_simulation", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN) - 40, NULL, NULL, NULL, NULL);
+	CreateWindow(L"Life_simulation", L"Life_simulation", WS_OVERLAPPEDWINDOW | WS_VISIBLE, 0, 0, GetSystemMetrics(SM_CXSCREEN) - 10, GetSystemMetrics(SM_CYSCREEN) - 40, NULL, NULL, NULL, NULL);
 
 
 
@@ -54,7 +54,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 {
 	switch (message)
 	{
-	case WM_HSCROLL:
+	case WM_HSCROLL:   // горизонтальные
+	//case WM_VSCROLL:   // вертикальные
 	{
 		int type = 0;
 
@@ -119,6 +120,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			FlagAutomaticStop = !FlagAutomaticStop;
 			break;
 		}
+		case IndexCheckBoxAutomaticReset:
+		{
+			SetFocus(hWnd);
+			FlagAutomaticReset = !FlagAutomaticReset;
+			break;
+		}
 
 		case IndexCheckBoxRandDivision:
 		{
@@ -131,44 +138,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		{
 			SetFocus(hWnd);
 			if (MessageBoxA(hWnd, "Вы уверены, что хотите пересоздать мир? Все несохранённые данные будут утеряны.", "Внимание!", MB_OKCANCEL | MB_ICONEXCLAMATION | MB_DEFBUTTON2) == IDOK) {
-				StopStep(hWnd);
-				
-				DestroyObject();
-
-				char new_size_map_str[5];
-
-				int new_size_map_int = 0;
-				int size = GetWindowTextA(EditSizeMapX, new_size_map_str, 5);
-				for (int i = 0; i < size; i++)
-				{
-					if ('0' <= new_size_map_str[i] && new_size_map_str[i] <= '9') {
-						new_size_map_int = new_size_map_int * 10 + new_size_map_str[i] - '0';
-					}
-				}
-				if (new_size_map_int > 0) {
-					size_map_x = new_size_map_int;
-				}
-				new_size_map_int = 0;
-				size = GetWindowTextA(EditSizeMapY, new_size_map_str, 5);
-				for (int i = 0; i < size; i++)
-				{
-					if ('0' <= new_size_map_str[i] && new_size_map_str[i] <= '9') {
-						new_size_map_int = new_size_map_int * 10 + new_size_map_str[i] - '0';
-					}
-				}
-				if (new_size_map_int > 0) {
-					size_map_y = new_size_map_int;
-				}
-
-				CountStep = 0;
-				BuildObject();
-
-				SetWindowTextA(EditSizeMapX, LPCSTR(std::to_string(size_map_x).c_str()));
-				SetWindowTextA(EditSizeMapY, LPCSTR(std::to_string(size_map_y).c_str()));
-
-				DrawInterface();
-
-				UpdateSizeScreen(hWnd, size_screen_x, size_screen_y, true);
+				ResetMap(hWnd);
 			}
 			break;
 		}
@@ -464,7 +434,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		case IndexTimerDraw:
 			//CheckFin();
 			//UpdatePlayInfo(hWnd);
-			for (int step = 0; step < PosSliderStepDraw; step++)
+			for (int step = 0; step < PosSliderStepDraw; step++)   // прокрутка неотрисованных кадров
 			{
 				OneStep();
 
@@ -474,10 +444,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					StopStep(hWnd);
 					break;
 				}
+
+				if (FlagAutomaticReset && (Creature_Plant::get_type_count() == 0 || Creature_Herbivore::get_type_count() == 0 || Creature_Scavenger::get_type_count() == 0)) {
+					ResetMap(hWnd);
+					StartStep(hWnd);
+					break;
+				}
 			}
 			//if (CountStep % PosSliderStepDraw == 0) {
-			RECT update{ margin_x, margin_y, margin_x + size_cell * size_map_x, margin_y + size_cell * size_map_y };
-			InvalidateRect(hWnd, &update, false);
+			UpdateDraw(hWnd);
 			//}
 			break;
 		}
@@ -506,10 +481,29 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	}
 
 	case WM_KEYDOWN:    // http://www.cyberguru.ru/programming/win32/win32-keyboard.html?showall=
+						// https://learn.microsoft.com/ru-ru/windows/win32/inputdev/virtual-key-codes
 	{
 		switch (wParam) {
 		case ' ':
 			SendMessage(hWnd, WM_COMMAND, IndexButtonStop, 0);
+			break;
+		case VK_F11:
+			if (FlagFullscreen) {  // когда в полноэкранном режиме
+				FlagFullscreen = false;  // вЫключить полноэкранный режим
+				
+				SetWindowLong(hWnd, GWL_STYLE, FullscreenStyle); // Загружаем стиль оконного режима
+				SetWindowPlacement(hWnd, &FullscreenPlacement); // Загружаем размещение оконного режима
+				ShowWindow(hWnd, SW_SHOW);
+			}
+			else {
+				FlagFullscreen = true; // включить полноэкранный режим
+
+				FullscreenStyle = GetWindowLong(hWnd, GWL_STYLE); // Сохраняем текущий стиль
+				FullscreenPlacement.length = sizeof(WINDOWPLACEMENT);
+				GetWindowPlacement(hWnd, &FullscreenPlacement); // Сохраняем размещение
+				SetWindowLong(hWnd, GWL_STYLE, WS_POPUP); // Устанавливаем новый стиль
+				ShowWindow(hWnd, SW_SHOWMAXIMIZED); // Окно во весь экран
+			}
 			break;
 		}
 		break;
@@ -518,7 +512,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	case WM_LBUTTONDOWN:
 	{		
 		//std::pair<int, int> map_cord((GET_X_LPARAM(lParam) - margin_x) / size_cell, (GET_Y_LPARAM(lParam) - margin_y) / size_cell);
-		if (PosSliderStepDraw == MaxPosSliderStepDraw) { break; }
+		if (PosSliderStepDraw == MaxPosSliderStepDraw || FlagFullscreen) { break; }
 
 		int xPos = GET_X_LPARAM(lParam);
 		int yPos = GET_Y_LPARAM(lParam);
@@ -570,7 +564,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 				}
 			}
 
-			UpdateDraw(hWnd);
+			FullUpdateDraw(hWnd);
 		}
 		break;
 	}
@@ -578,7 +572,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	{
 		if (wParam & MK_LBUTTON) {
 			if (wParam & MK_SHIFT) {
-				if (PosSliderStepDraw == MaxPosSliderStepDraw) { break; }
+				if (PosSliderStepDraw == MaxPosSliderStepDraw || FlagFullscreen) { break; }
 
 				int xPos = GET_X_LPARAM(lParam);
 				int yPos = GET_Y_LPARAM(lParam);
@@ -597,7 +591,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 						place->set_Creature();
 					}
 
-					UpdateDraw(hWnd);
+					FullUpdateDraw(hWnd);
 				}
 			}
 		}
@@ -620,11 +614,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		SendMessage(hWnd, WM_SETREDRAW, true, 0);
 		position_WM_SETREDRAW = true;
 
-		if(size_cell == MinSizeCell || (size_cell * size_map_y + 3 * margin_y + 136) < height_right_interface){  // это чтобы самый маленький экран отрисовался когда ты отпустил
-			InvalidateRect(hWnd, NULL, true);
+		//if(1 || size_cell == MinSizeCell || (size_cell * size_map_y + 3 * margin_y + 136) < 
+		// ){  // это чтобы самый маленький экран отрисовался когда ты отпустил
+		//	InvalidateRect(hWnd, NULL, true);
 
-			UpdateWidget();
-		}
+		//	UpdateWidget();
+		//}// 
+		// приходится обновлять всегда из за не отрисовки при перетягивании полноэкранного окна
+		InvalidateRect(hWnd, NULL, true);  
+
+		UpdateWidget();
+
 
 		break;
 	}
@@ -658,6 +658,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		BuildDrawEffecter(hWnd);
 		BuildWidget(hWnd);
 		BuildObject();
+
+		FullUpdateDraw(hWnd);
 		break;
 	}
 	case WM_DESTROY:

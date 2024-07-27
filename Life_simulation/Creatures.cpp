@@ -22,7 +22,7 @@ Creature::Condition::Condition(int power, int true_iter, int false_iter, Creatur
 
 
 bool Creature::Condition::use(int power_step) {
-	if (this->creature->get_TYPE_CREATURE() == TYPE_CREATURE::Herbivore) {
+	if (this->creature->get_TYPE_CREATURE() == TYPE_CREATURE::HERBIVORE) {
  		int a = 0;
 	}
 
@@ -57,11 +57,11 @@ bool Creature::Condition::Cond()
 	if (this->to_dir == DIRECTION::UNDER) {
 		switch (this->creature->get_TYPE_CREATURE())
 		{
-		case TYPE_CREATURE::Plant:
+		case TYPE_CREATURE::PLANT:
 			return this->creature->see[4][0]->free_energy <= this->found_level_under;
 			break;
-		case TYPE_CREATURE::Herbivore:
-		case TYPE_CREATURE::Scavenger:
+		case TYPE_CREATURE::HERBIVORE:
+		case TYPE_CREATURE::SCAVENGER:
 			return this->creature->see[4][0]->free_energy >= this->found_level_under;
 			break;
 		}
@@ -120,7 +120,7 @@ Creature* parse_str_to_Creature(const std::pair<int, int>& map_cord, std::string
 
 		switch (type_creature)
 		{
-		case TYPE_CREATURE::Plant:
+		case TYPE_CREATURE::PLANT:
 			switch (TYPE_ACTION(arr[0]))
 			{
 			case TYPE_ACTION::GO:
@@ -138,8 +138,11 @@ Creature* parse_str_to_Creature(const std::pair<int, int>& map_cord, std::string
 			case TYPE_ACTION::CONDITION_BY_TYPE_CREATURE:
 				br.push_back(new Creature_Plant::Action_condition_by_TYPE_CREATURE(nullptr, DIRECTION(arr[1]), arr[3], arr[4], TYPE_CREATURE(arr[2])));
 				break;
-			case TYPE_ACTION::CONDITION_BY_CELL:
-				br.push_back(new Creature_Plant::Action_condition_by_Cell(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
+			case TYPE_ACTION::CONDITION_BY_CELL_ENERGY:
+				br.push_back(new Creature_Plant::Action_condition_by_Cell_energy(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
+				break;
+			case TYPE_ACTION::CONDITION_BY_CREATURE_ENERGY:
+				br.push_back(new Creature_Plant::Action_condition_by_Creature_energy(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
 				break;
 			case TYPE_ACTION::CHANGE_ITER:
 				br.push_back(new Creature_Plant::Action_change_iter(nullptr, arr[3]));
@@ -148,7 +151,7 @@ Creature* parse_str_to_Creature(const std::pair<int, int>& map_cord, std::string
 				throw;
 			}
 			break;
-		case TYPE_CREATURE::Herbivore:
+		case TYPE_CREATURE::HERBIVORE:
 			switch (TYPE_ACTION(arr[0]))
 			{
 			case TYPE_ACTION::GO:
@@ -166,8 +169,11 @@ Creature* parse_str_to_Creature(const std::pair<int, int>& map_cord, std::string
 			case TYPE_ACTION::CONDITION_BY_TYPE_CREATURE:
 				br.push_back(new Creature_Herbivore::Action_condition_by_TYPE_CREATURE(nullptr, DIRECTION(arr[1]), arr[3], arr[4], TYPE_CREATURE(arr[2])));
 				break;
-			case TYPE_ACTION::CONDITION_BY_CELL:
-				br.push_back(new Creature_Herbivore::Action_condition_by_Cell(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
+			case TYPE_ACTION::CONDITION_BY_CELL_ENERGY:
+				br.push_back(new Creature_Herbivore::Action_condition_by_Cell_energy(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
+				break;
+			case TYPE_ACTION::CONDITION_BY_CREATURE_ENERGY:
+				br.push_back(new Creature_Herbivore::Action_condition_by_Creature_energy(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
 				break;
 			case TYPE_ACTION::CHANGE_ITER:
 				br.push_back(new Creature_Herbivore::Action_change_iter(nullptr, arr[3]));
@@ -176,7 +182,7 @@ Creature* parse_str_to_Creature(const std::pair<int, int>& map_cord, std::string
 				throw;
 			}
 			break;
-		case TYPE_CREATURE::Scavenger:
+		case TYPE_CREATURE::SCAVENGER:
 			switch (TYPE_ACTION(arr[0]))
 			{
 			case TYPE_ACTION::GO:
@@ -194,8 +200,11 @@ Creature* parse_str_to_Creature(const std::pair<int, int>& map_cord, std::string
 			case TYPE_ACTION::CONDITION_BY_TYPE_CREATURE:
 				br.push_back(new Creature_Scavenger::Action_condition_by_TYPE_CREATURE(nullptr, DIRECTION(arr[1]), arr[3], arr[4], TYPE_CREATURE(arr[2])));
 				break;
-			case TYPE_ACTION::CONDITION_BY_CELL:
-				br.push_back(new Creature_Scavenger::Action_condition_by_Cell(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
+			case TYPE_ACTION::CONDITION_BY_CELL_ENERGY:
+				br.push_back(new Creature_Scavenger::Action_condition_by_Cell_energy(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
+				break;
+			case TYPE_ACTION::CONDITION_BY_CREATURE_ENERGY:
+				br.push_back(new Creature_Scavenger::Action_condition_by_Creature_energy(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
 				break;
 			case TYPE_ACTION::CHANGE_ITER:
 				br.push_back(new Creature_Scavenger::Action_change_iter(nullptr, arr[3]));
@@ -211,11 +220,11 @@ Creature* parse_str_to_Creature(const std::pair<int, int>& map_cord, std::string
 	
 	switch (type_creature)
 	{
-	case TYPE_CREATURE::Plant:
+	case TYPE_CREATURE::PLANT:
 		return new Creature_Plant(map_cord, energy, dir, age, &br, br_iter);
-	case TYPE_CREATURE::Herbivore:
+	case TYPE_CREATURE::HERBIVORE:
 		return new Creature_Herbivore(map_cord, energy, dir, age, &br, br_iter);
-	case TYPE_CREATURE::Scavenger:
+	case TYPE_CREATURE::SCAVENGER:
 		return new Creature_Scavenger(map_cord, energy, dir, age, &br, br_iter);
 	default:
 		throw;
@@ -243,17 +252,6 @@ Creature::Creature(std::pair<int, int> map_cord, int energy, DIRECTION dir, int 
 	this->map_cord = map_cord;
 
 	this->flag_step = true;
-
-	if (brain == nullptr) {
-		this->brain_mutation((rand() % start_max_len_brain) + 1, &this->brain);
-	}
-	else {
-		for (auto& act : *brain)
-		{
-			act->set_Creature(this);    // пометил как свой
-		}
-		this->brain = *brain;    // скопировал мозг и хранит как свой
-	}
 }
 
 Creature::~Creature()
@@ -263,31 +261,6 @@ Creature::~Creature()
 		act = nullptr;
 	}
 	this->brain.clear();
-}
-
-void Creature::step() {
-	if (this->flag_step) {
-		this->flag_step = false;
-		for (int i = 0; i < limit_power_step && !this->brain[this->iter]->use(); ++i) {};   // цикл для прокрутки действий, не завершаюших ход 
-	}
-
-	//int tmp = 0;   // количество существ моего ипа
-	//switch (this->get_TYPE_CREATURE())
-	//{
-	//case TYPE_CREATURE::Plant:
-	//	tmp = Creature_Plant::get_type_count();
-	//	break;
-	//case TYPE_CREATURE::Herbivore:
-	//	tmp = Creature_Herbivore::get_type_count();
-	//	break;
-	//case TYPE_CREATURE::Scavenger:
-	//	tmp = Creature_Scavenger::get_type_count();
-	//	break;
-	//}
-	////this->energy -= 100.0 * (CountPlant + CountScavenger + CountHerbivore) / (size_map_x * size_map_y);
-	////this->energy -= int(float(limit_energy / 8) * (tmp * 2) / (size_map_x * size_map_y) + this->brain.size());
-	//this->energy -= (limit_energy * PosSliderAllLose * tmp) / (size_map_x * size_map_y * 100);
-	////this->energy -= int(float(limit_energy / 20) * (tmp * 4) / (size_map_x * size_map_y) + this->brain.size());
 }
 
 void Creature::allow_to_act()
@@ -343,7 +316,7 @@ void Creature::draw_brain()
 			break;
 		}
 
-		SetWindowPos(StaticPeepBrain[i].first, nullptr, width - StaticPeepBrain[i].second, margin_y * 2 + size_map_y * size_cell + 20, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
+		SetWindowPos(StaticPeepBrain[i].first, nullptr, width - StaticPeepBrain[i].second, margin_y * 2 + size_map_y * size_cell + 20 + FlagFullscreen * size_screen_y, 0, 0, SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 		//ShowWindow(StaticPeepBrain[i].first, SW_SHOW);
 	}
 	//for (; i < this->brain.size(); i++)
@@ -397,27 +370,6 @@ int Creature::get_brain_size()
 }
 
 
-void Creature::brain_mutation(unsigned int mut_iter, std::vector<Action*>* change_brain)  // мутирует ген номр mut_iter или мозг дорастает до мутируемго гена
-{
-	if (change_brain->size() > mut_iter) {     // если меняемый ген уже создан
-		if (rand() % 2 || !(*change_brain)[mut_iter]->mutation()) {			// возможно поменять часть гена
-			delete (*change_brain)[mut_iter];								// если не получилось, то изменить весь ген
-			(*change_brain)[mut_iter] = get_rand_Action(this, change_brain->size());
-		}
-		return;
-	}
-	
-	while (mut_iter >= change_brain->size()) {
-		change_brain->push_back(get_rand_Action(this, mut_iter));
-	}
-	//for (auto& act : this->brain)   // чтобы с большим шансом на новые гены ссылалсь
-	//{
-	//	if (rand() % 2) {
-	//		act->mutation();
-	//	}
-	//}
-}
-
 void Creature::check_my_live()
 {
 	if (this->energy < 0) {
@@ -430,6 +382,33 @@ void Creature::check_my_live()
 		this->get_under_me()->change_free_energy(max(this->energy >> 5, 10));
 		this->get_under_me()->set_Creature();
 	}
+}
+
+void Creature::make_act()
+{
+	if (this->flag_step) {
+		this->flag_step = false;
+		for (int i = 0; i < limit_power_step && !this->brain[this->iter]->use(); ++i) {};   // цикл для прокрутки действий, не завершаюших ход 
+	}
+	this->energy -= ((std::min)(int(sqrt(CountStep)), limit_energy)) * PosSliderAllLose / 100;
+	//int tmp = 0;   // количество существ моего ипа
+	//switch (this->get_TYPE_CREATURE())
+	//{
+	//case TYPE_CREATURE::PLANT:
+	//	tmp = Creature_Plant::get_type_count();
+	//	break;
+	//case TYPE_CREATURE::HERBIVORE:
+	//	tmp = Creature_Herbivore::get_type_count();
+	//	break;
+	//case TYPE_CREATURE::SCAVENGER:
+	//	tmp = Creature_Scavenger::get_type_count();
+	//	break;
+	//}
+	////this->energy -= 100.0 * (CountPlant + CountScavenger + CountHerbivore) / (size_map_x * size_map_y);
+	////this->energy -= int(float(
+	//  / 8) * (tmp * 2) / (size_map_x * size_map_y) + this->brain.size());
+	//this->energy -= (limit_energy * PosSliderAllLose * tmp) / (size_map_x * size_map_y * 100);
+	////this->energy -= int(float(limit_energy / 20) * (tmp * 4) / (size_map_x * size_map_y) + this->brain.size());
 }
 
 

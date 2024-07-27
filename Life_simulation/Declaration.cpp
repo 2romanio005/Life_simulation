@@ -8,10 +8,11 @@ Cell** map;
 
 int size_screen_x;
 int size_screen_y;
-int size_map_x = 5;
-int size_map_y = 5;
+int size_map_x = 100;	// 120  // 220
+int size_map_y = 50;	// 66	// 116
 int size_cell;
 int size_half_cell;
+int size_creature_radius;
 
 
 
@@ -31,7 +32,11 @@ HBITMAP SupHbm;
 HANDLE SupHold;
 
 bool position_WM_SETREDRAW = true;
-int height_right_interface;
+
+bool FlagFullscreen = false;
+LONG FullscreenStyle;
+WINDOWPLACEMENT FullscreenPlacement;
+
 
 
 HWND StaticCountStep;
@@ -41,7 +46,10 @@ HWND ButtonStop;
 bool FlagStop = false;
 
 HWND CheckBoxAutomaticStop;
-bool FlagAutomaticStop = true;
+bool FlagAutomaticStop = false;
+
+HWND CheckBoxAutomaticReset;
+bool FlagAutomaticReset = true;
 
 HWND StaticTimeDrawMain;
 HWND SliderTimeDraw;
@@ -78,7 +86,7 @@ int PosSliderBlueEat = 14;
 
 HWND StaticAllLose;
 HWND SliderAllLose;
-int PosSliderAllLose = 12;
+int PosSliderAllLose = 3;
 
 
 HWND StaticCountCreature;

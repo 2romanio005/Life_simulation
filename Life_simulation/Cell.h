@@ -1,6 +1,6 @@
 #pragma once
 #include "Definition.h"
-#include "ENUMS.h"
+
 
 
 class Cell
@@ -21,6 +21,8 @@ public:
 
 	void change_free_energy(int step);
 
+	void set_free_energy(int free_energy);
+
 	void set_Creature(Creature* creature = nullptr);
 
 	void swap_Creapure(Cell* cell);
@@ -29,13 +31,9 @@ public:
 
 
 	int get_free_energy();
-
 	std::pair<int, int> get_map_cord();
-
 	TYPE_CREATURE get_TYPE_CREATURE();
-
 	int get_Creature_energy();
-
 	Creature* get_Creature();
 
 	//int solar_energy;

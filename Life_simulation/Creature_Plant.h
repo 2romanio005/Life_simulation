@@ -9,13 +9,15 @@ public:
 
 	Creature* copy(std::pair<int, int> map_cord) override;
 
-	void step();
+	void step() override;
 
 	void draw_myself(HDC hdc, std::pair<int, int> cord) override;
 
 	static int get_type_count();
 
 	TYPE_CREATURE get_TYPE_CREATURE() override;
+
+	void brain_mutation(std::vector<Action*>* change_brain, unsigned int mut_iter) override;
 private:
 	static int CountPlant;
 
@@ -53,7 +55,7 @@ public:
 	public:
 		Action_turn(Creature_Plant* creature, DIRECTION to_dir);
 
-		bool use() override;
+		//bool use() override;
 
 		Action* copy() override;
 	};
@@ -62,16 +64,25 @@ public:
 	public:
 		Action_condition_by_TYPE_CREATURE(Creature_Plant* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, TYPE_CREATURE type_creature);
 
-		bool use() override;
+		//bool use() override;
 
 		Action* copy() override;
 	};
 
-	class Action_condition_by_Cell : public Action_condition_by_Cell_global {
+	class Action_condition_by_Cell_energy : public  Action_condition_by_Cell_energy_global {
 	public:
-		Action_condition_by_Cell(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit);
+		Action_condition_by_Cell_energy(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit);
 
-		bool use() override;
+		//bool use() override;
+
+		Action* copy() override;
+	};
+
+	class Action_condition_by_Creature_energy : public  Action_condition_by_Creature_energy_global {
+	public:
+		Action_condition_by_Creature_energy(Creature* creature, DIRECTION to_dir, unsigned int true_iter, unsigned int false_iter, int limit);
+
+		//bool use() override;
 
 		Action* copy() override;
 	};
