@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Creature_Herbivore.h"
 
 Creature_Herbivore::Creature_Herbivore(std::pair<int, int> map_cord, int energy, DIRECTION dir, int age, std::vector<Action*>* brain, unsigned int iter) : Creature(map_cord, energy, dir, age, brain, iter) {

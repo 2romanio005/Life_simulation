@@ -13,68 +13,30 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Исходные файлы\Creature">
-      <UniqueIdentifier>{26367ae3-bd13-4241-b6a2-0a34cd12af2e}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\Creatures">
+      <UniqueIdentifier>{b444ff42-36ad-4220-b15d-cef678b12a18}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Creature\Creature_Scavenger">
-      <UniqueIdentifier>{ba22c9f1-3771-49ec-bbf2-0c0b5bbf9ba4}</UniqueIdentifier>
+    <Filter Include="Файлы заголовков\Creatures">
+      <UniqueIdentifier>{51643741-36e2-4630-8ac3-37ef083245f7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Creature\Creature_Herbivore">
-      <UniqueIdentifier>{032de123-bc81-4e18-91e4-73d678ad252f}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\Creatures\Herbivore">
+      <UniqueIdentifier>{65cdb99d-abe0-4c0a-abf2-43efbe6c7518}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\Creature\Creature_Plant">
-      <UniqueIdentifier>{4d5b5de6-2cc3-4f87-9d0d-69267b4a1818}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\Creatures\Plant">
+      <UniqueIdentifier>{e60f684f-162a-4ebd-a3e6-6116306268cd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\Creature">
-      <UniqueIdentifier>{091614cb-3288-4482-8b22-18027a02066a}</UniqueIdentifier>
+    <Filter Include="Исходные файлы\Creatures\Scavenger">
+      <UniqueIdentifier>{24a6227d-9019-43b8-874e-f312cd46d7f6}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Life_simulation.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Declaration.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Function.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Actions.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Cell.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="Creature_Plant.cpp">
-      <Filter>Исходные файлы\Creature\Creature_Plant</Filter>
-    </ClCompile>
-    <ClCompile Include="Creature_Plant_Actions.cpp">
-      <Filter>Исходные файлы\Creature\Creature_Plant</Filter>
-    </ClCompile>
-    <ClCompile Include="Creature_Herbivore_Actions.cpp">
-      <Filter>Исходные файлы\Creature\Creature_Herbivore</Filter>
-    </ClCompile>
-    <ClCompile Include="Creature_Herbivore.cpp">
-      <Filter>Исходные файлы\Creature\Creature_Herbivore</Filter>
-    </ClCompile>
-    <ClCompile Include="Creature_Scavenger_Actions.cpp">
-      <Filter>Исходные файлы\Creature\Creature_Scavenger</Filter>
-    </ClCompile>
-    <ClCompile Include="Creature_Scavenger.cpp">
-      <Filter>Исходные файлы\Creature\Creature_Scavenger</Filter>
-    </ClCompile>
-    <ClCompile Include="Creatures.cpp">
-      <Filter>Исходные файлы\Creature</Filter>
-    </ClCompile>
-    <ClCompile Include="Creature_Actions.cpp">
-      <Filter>Исходные файлы\Creature</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Actions.h">
+    <ClInclude Include="Definition.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ENUMS.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="MainConnection.h">
@@ -83,33 +45,71 @@
     <ClInclude Include="resource.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Definition.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="Actions.h">
+      <Filter>Файлы заголовков\Creatures</Filter>
     </ClInclude>
     <ClInclude Include="Creature_Herbivore.h">
-      <Filter>Файлы заголовков\Creature</Filter>
+      <Filter>Файлы заголовков\Creatures</Filter>
     </ClInclude>
     <ClInclude Include="Creature_Plant.h">
-      <Filter>Файлы заголовков\Creature</Filter>
+      <Filter>Файлы заголовков\Creatures</Filter>
     </ClInclude>
     <ClInclude Include="Creature_Scavenger.h">
-      <Filter>Файлы заголовков\Creature</Filter>
+      <Filter>Файлы заголовков\Creatures</Filter>
     </ClInclude>
     <ClInclude Include="Creatures.h">
-      <Filter>Файлы заголовков\Creature</Filter>
-    </ClInclude>
-    <ClInclude Include="ENUMS.h">
-      <Filter>Файлы заголовков</Filter>
+      <Filter>Файлы заголовков\Creatures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Life_simulation.rc">
-      <Filter>Файлы ресурсов</Filter>
-    </ResourceCompile>
+    <ClCompile Include="Cell.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Declaration.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Function.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Life_simulation.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature_Actions.cpp">
+      <Filter>Исходные файлы\Creatures</Filter>
+    </ClCompile>
+    <ClCompile Include="Creatures.cpp">
+      <Filter>Исходные файлы\Creatures</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature_Herbivore.cpp">
+      <Filter>Исходные файлы\Creatures\Herbivore</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature_Herbivore_Actions.cpp">
+      <Filter>Исходные файлы\Creatures\Herbivore</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature_Plant.cpp">
+      <Filter>Исходные файлы\Creatures\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature_Plant_Actions.cpp">
+      <Filter>Исходные файлы\Creatures\Plant</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature_Scavenger.cpp">
+      <Filter>Исходные файлы\Creatures\Scavenger</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature_Scavenger_Actions.cpp">
+      <Filter>Исходные файлы\Creatures\Scavenger</Filter>
+    </ClCompile>
+    <ClCompile Include="Actions.cpp">
+      <Filter>Исходные файлы\Creatures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Ico_Life_simulation.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Life_simulation.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

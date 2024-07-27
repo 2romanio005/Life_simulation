@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Creatures.h"
 
 class Creature_Herbivore : public Creature {

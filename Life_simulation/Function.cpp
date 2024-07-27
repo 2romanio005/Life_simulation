@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Definition.h"
 #include "Creature_Plant.h"
 #include "Creature_Herbivore.h"
@@ -6,7 +6,7 @@
 
 
 
-int parse_str_to_int_one_step(const std::string& s, int* iter, char separator) {
+int parse_str_to_int_one_step(const std::string &s, int *iter, char separator) {
 	int out = 0;
 	bool flag = false;
 	if (s.at(*iter) == '-') {
@@ -31,7 +31,7 @@ DIRECTION turn(DIRECTION strt, DIRECTION step)
 
 
 
-void OneStep() {	
+void OneStep() {
 	for (int i = 0; i < size_map_x; i++)
 	{
 		for (int j = 0; j < size_map_y; j++)
@@ -65,7 +65,7 @@ void StartStep(HWND hWnd)
 	SetWindowTextA(ButtonStop, LPCSTR("Остановить"));
 }
 
-void ResetMap(HWND hWnd){
+void ResetMap(HWND hWnd) {
 	StopStep(hWnd);
 
 	DestroyObject();
@@ -159,7 +159,7 @@ void FullUpdateDraw(HWND hWnd)
 void UpdateDraw(HWND hWnd) {
 	int x = margin_x + FlagFullscreen * (size_screen_x - 2 * margin_x - size_cell * size_map_x) / 2;
 	int y = margin_y + FlagFullscreen * (size_screen_y - 2 * margin_y - size_cell * size_map_y) / 2;
-	RECT update{ x, y, x + size_cell * size_map_x, y + size_cell * size_map_y };
+	RECT update { x, y, x + size_cell * size_map_x, y + size_cell * size_map_y };
 	InvalidateRect(hWnd, &update, false);
 }
 
@@ -252,7 +252,7 @@ void MoveWidget()
 	SetWindowPos(SliderGreenEat, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
 	SetWindowPos(StaticBlueEat, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	SetWindowPos(SliderBlueEat, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);	
+	SetWindowPos(SliderBlueEat, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 
 	SetWindowPos(StaticAllLose, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 	SetWindowPos(SliderAllLose, nullptr, width, height += 20, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
@@ -270,7 +270,7 @@ void MoveWidget()
 
 	SetWindowPos(EditSizeMapX, nullptr, width, height += 30, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
 	SetWindowPos(EditSizeMapY, nullptr, width + 115, height, 0, 0, SWP_NOSIZE | SWP_NOOWNERZORDER | SWP_NOZORDER);
-	
+
 
 	height = margin_y * 2 + size_map_y * size_cell + FlagFullscreen * size_screen_y;
 
@@ -333,7 +333,7 @@ void UpdateWidget()
 
 	UpdateWindow(StaticPeepData);
 	UpdateWindow(StaticPeepBrainHeader);
-	for (auto& el : StaticPeepBrain)
+	for (auto &el : StaticPeepBrain)
 	{
 		UpdateWindow(el.first);
 	}
@@ -446,17 +446,17 @@ void BuildObject() {
 
 			switch (rand() % 4)
 			{
-			case TYPE_CREATURE::PLANT:
-				map[i][j].set_Creature(new Creature_Plant({i, j}, start_energy, DIRECTION(rand() % 4), rand() % limit_age));
-				break;
-			case TYPE_CREATURE::HERBIVORE:
-				map[i][j].set_Creature(new Creature_Herbivore({ i, j }, start_energy, DIRECTION(rand() % 4), rand() % limit_age));
-				break;
-			case TYPE_CREATURE::SCAVENGER:
-				map[i][j].set_Creature(new Creature_Scavenger({ i, j }, start_energy, DIRECTION(rand() % 4), rand() % limit_age));
-				break;
-			default:
-				break;
+				case TYPE_CREATURE::PLANT:
+					map[i][j].set_Creature(new Creature_Plant({ i, j }, start_energy, DIRECTION(rand() % 4), rand() % limit_age));
+					break;
+				case TYPE_CREATURE::HERBIVORE:
+					map[i][j].set_Creature(new Creature_Herbivore({ i, j }, start_energy, DIRECTION(rand() % 4), rand() % limit_age));
+					break;
+				case TYPE_CREATURE::SCAVENGER:
+					map[i][j].set_Creature(new Creature_Scavenger({ i, j }, start_energy, DIRECTION(rand() % 4), rand() % limit_age));
+					break;
+				default:
+					break;
 			}
 		}
 	}
@@ -560,7 +560,7 @@ void DestroyWidget(HWND hWnd) {
 	DestroyWindow(SliderTimeDraw);
 	DestroyWindow(StaticTimeDrawLeft);
 	DestroyWindow(StaticTimeDrawRight);
-	
+
 	DestroyWindow(StaticStepDrawMain);
 	DestroyWindow(SliderStepDraw);
 	DestroyWindow(StaticStepDrawLeft);
@@ -579,7 +579,7 @@ void DestroyWidget(HWND hWnd) {
 
 	DestroyWindow(StaticBlueEat);
 	DestroyWindow(SliderBlueEat);
-	
+
 	DestroyWindow(StaticAllLose);
 	DestroyWindow(SliderAllLose);
 
@@ -598,7 +598,7 @@ void DestroyWidget(HWND hWnd) {
 
 	DestroyWindow(StaticPeepData);
 	DestroyWindow(StaticPeepBrainHeader);
-	for (auto& el : StaticPeepBrain)
+	for (auto &el : StaticPeepBrain)
 	{
 		DestroyWindow(el.first);
 	}
@@ -640,58 +640,58 @@ void DestroyDrawEffecter(HWND hWnd) {
 
 
 
-void MoveSlider(HWND hWnd, int type, int* pos, int min_pos, int max_pos) {
+void MoveSlider(HWND hWnd, int type, int *pos, int min_pos, int max_pos) {
 	(*pos) = max(min_pos, min((*pos), max_pos));
 	switch (type)
 	{
-	case 0:
-		SetScrollPos(SliderTimeDraw, SB_CTL, *pos, TRUE);
-		if (FlagStop) {
-			KillTimer(hWnd, IndexTimerDraw);
-			SetTimer(hWnd, IndexTimerDraw, PosSliderTimeDraw * 100, NULL);
-		}
-		break;
-	case 1:
-		SetScrollPos(SliderStepDraw, SB_CTL, *pos, TRUE);
-		break;
-	case 2:
-		SetScrollPos(SliderPeepBrain, SB_CTL, *pos, TRUE);
-		if (peep_Creature != nullptr) {
-			peep_Creature->draw_brain();
-		}
-		break;
-	case 3:
-		SetScrollPos(SliderRedEat, SB_CTL, *pos, TRUE);
-		SetWindowTextA(StaticRedEat, LPCSTR(("Красный ест: " + std::to_string(PosSliderRedEat) + "%").c_str()));
-		MaxPosSliderRedLeave = 100 - PosSliderRedEat;
-		SetScrollRange(SliderRedLeave, SB_CTL, 0, MaxPosSliderRedLeave, TRUE);
-		if (PosSliderRedLeave > MaxPosSliderRedLeave) {
-			PosSliderRedLeave = MaxPosSliderRedLeave;
-			SetScrollPos(SliderRedLeave, SB_CTL, PosSliderRedLeave, TRUE);
+		case 0:
+			SetScrollPos(SliderTimeDraw, SB_CTL, *pos, TRUE);
+			if (FlagStop) {
+				KillTimer(hWnd, IndexTimerDraw);
+				SetTimer(hWnd, IndexTimerDraw, PosSliderTimeDraw * 100, NULL);
+			}
+			break;
+		case 1:
+			SetScrollPos(SliderStepDraw, SB_CTL, *pos, TRUE);
+			break;
+		case 2:
+			SetScrollPos(SliderPeepBrain, SB_CTL, *pos, TRUE);
+			if (peep_Creature != nullptr) {
+				peep_Creature->draw_brain();
+			}
+			break;
+		case 3:
+			SetScrollPos(SliderRedEat, SB_CTL, *pos, TRUE);
+			SetWindowTextA(StaticRedEat, LPCSTR(("Красный ест: " + std::to_string(PosSliderRedEat) + "%").c_str()));
+			MaxPosSliderRedLeave = 100 - PosSliderRedEat;
+			SetScrollRange(SliderRedLeave, SB_CTL, 0, MaxPosSliderRedLeave, TRUE);
+			if (PosSliderRedLeave > MaxPosSliderRedLeave) {
+				PosSliderRedLeave = MaxPosSliderRedLeave;
+				SetScrollPos(SliderRedLeave, SB_CTL, PosSliderRedLeave, TRUE);
+				SetWindowTextA(StaticRedLeave, LPCSTR(("Красный оставляет: " + std::to_string(PosSliderRedLeave) + "%").c_str()));
+			}
+			break;
+		case 4:
+			SetScrollPos(SliderRedLeave, SB_CTL, *pos, TRUE);
 			SetWindowTextA(StaticRedLeave, LPCSTR(("Красный оставляет: " + std::to_string(PosSliderRedLeave) + "%").c_str()));
-		}
-		break;
-	case 4:
-		SetScrollPos(SliderRedLeave, SB_CTL, *pos, TRUE);
-		SetWindowTextA(StaticRedLeave, LPCSTR(("Красный оставляет: " + std::to_string(PosSliderRedLeave) + "%").c_str()));
-		break;
-	case 5:
-		SetScrollPos(SliderGreenEat, SB_CTL, *pos, TRUE);
-		SetWindowTextA(StaticGreenEat, LPCSTR(("Зелёный ест: " + std::to_string(PosSliderGreenEat) + "%").c_str()));
-		break;
-	case 6:
-		SetScrollPos(SliderBlueEat, SB_CTL, *pos, TRUE);
-		SetWindowTextA(StaticBlueEat, LPCSTR(("Синий ест: " + std::to_string(PosSliderBlueEat) + "%").c_str()));
-		break;
-	case 7:
-		SetScrollPos(SliderAllLose, SB_CTL, *pos, TRUE);
-		SetWindowTextA(StaticAllLose, LPCSTR(("Все теряют: " + std::to_string(PosSliderAllLose) + "%").c_str()));
-		break;
+			break;
+		case 5:
+			SetScrollPos(SliderGreenEat, SB_CTL, *pos, TRUE);
+			SetWindowTextA(StaticGreenEat, LPCSTR(("Зелёный ест: " + std::to_string(PosSliderGreenEat) + "%").c_str()));
+			break;
+		case 6:
+			SetScrollPos(SliderBlueEat, SB_CTL, *pos, TRUE);
+			SetWindowTextA(StaticBlueEat, LPCSTR(("Синий ест: " + std::to_string(PosSliderBlueEat) + "%").c_str()));
+			break;
+		case 7:
+			SetScrollPos(SliderAllLose, SB_CTL, *pos, TRUE);
+			SetWindowTextA(StaticAllLose, LPCSTR(("Все теряют: " + std::to_string(PosSliderAllLose) + "%").c_str()));
+			break;
 	}
 }
 
 
-void SetOpenFileParams(HWND hWnd, OPENFILENAMEA* ofn, char* path, const char* def_expansion, const char* filter, DWORD flag) {
+void SetOpenFileParams(HWND hWnd, OPENFILENAMEA *ofn, char *path, const char *def_expansion, const char *filter, DWORD flag) {
 	ZeroMemory(ofn, sizeof(*ofn));
 
 	ofn->lStructSize = sizeof(*ofn);
@@ -706,10 +706,10 @@ void SetOpenFileParams(HWND hWnd, OPENFILENAMEA* ofn, char* path, const char* de
 	ofn->Flags = flag;
 }
 
-bool CheckExpansion(const char* check_expansion, const char* right_expansion, unsigned int size) {
+bool CheckExpansion(const char *check_expansion, const char *right_expansion, unsigned int size) {
 	for (unsigned int i = 0; i < size; i++) {
 		if (check_expansion[i] != right_expansion[i]) {
-			return true; 
+			return true;
 		}
 	}
 	return false;
@@ -722,14 +722,14 @@ std::string string_by_type_creature(TYPE_CREATURE type_creature)
 {
 	switch (type_creature)
 	{
-	case TYPE_CREATURE::PLANT:
-		return "Растение";
-	case TYPE_CREATURE::HERBIVORE:
-		return "Хищник";
-	case TYPE_CREATURE::SCAVENGER:
-		return "Падальщик";
-	case TYPE_CREATURE::Void:
-		return "Никого";
+		case TYPE_CREATURE::PLANT:
+			return "Растение";
+		case TYPE_CREATURE::HERBIVORE:
+			return "Хищник";
+		case TYPE_CREATURE::SCAVENGER:
+			return "Падальщик";
+		case TYPE_CREATURE::Void:
+			return "Никого";
 	}
 	return "???";
 }
@@ -739,24 +739,24 @@ std::string string_by_dir_for_condition(DIRECTION dir)
 {
 	switch (dir)
 	{
-	case DIRECTION::to_FORWARD:
-		return "Спереди";
-	case DIRECTION::to_RIGHT:
-		return "Справа";
-	case DIRECTION::to_LEFT:
-		return "Слева";
-	case DIRECTION::to_BACK:
-		return "Сзади";
-	case DIRECTION::UP:
-		return "Верх";
-	case DIRECTION::RIGHT:
-		return "Право";
-	case DIRECTION::DOWN:
-		return "Низ";
-	case DIRECTION::LEFT:
-		return "Лево";
-	case DIRECTION::UNDER:
-		return "Снизу";
+		case DIRECTION::to_FORWARD:
+			return "Спереди";
+		case DIRECTION::to_RIGHT:
+			return "Справа";
+		case DIRECTION::to_LEFT:
+			return "Слева";
+		case DIRECTION::to_BACK:
+			return "Сзади";
+		case DIRECTION::UP:
+			return "Верх";
+		case DIRECTION::RIGHT:
+			return "Право";
+		case DIRECTION::DOWN:
+			return "Низ";
+		case DIRECTION::LEFT:
+			return "Лево";
+		case DIRECTION::UNDER:
+			return "Снизу";
 	}
 	return "???";
 }
@@ -765,24 +765,24 @@ std::string string_by_dir_for_turn(DIRECTION dir)
 {
 	switch (dir)
 	{
-	case DIRECTION::to_FORWARD:
-		return "Вперёд";
-	case DIRECTION::to_RIGHT:
-		return "Направо";
-	case DIRECTION::to_LEFT:
-		return "Налево";
-	case DIRECTION::to_BACK:
-		return "Назад";
-	case DIRECTION::UP:
-		return "Верх";
-	case DIRECTION::RIGHT:
-		return "Право";
-	case DIRECTION::DOWN:
-		return "Низ";
-	case DIRECTION::LEFT:
-		return "Лево";
-	case DIRECTION::UNDER:
-		return "Снизу";
+		case DIRECTION::to_FORWARD:
+			return "Вперёд";
+		case DIRECTION::to_RIGHT:
+			return "Направо";
+		case DIRECTION::to_LEFT:
+			return "Налево";
+		case DIRECTION::to_BACK:
+			return "Назад";
+		case DIRECTION::UP:
+			return "Верх";
+		case DIRECTION::RIGHT:
+			return "Право";
+		case DIRECTION::DOWN:
+			return "Низ";
+		case DIRECTION::LEFT:
+			return "Лево";
+		case DIRECTION::UNDER:
+			return "Снизу";
 	}
 
 	return "???";

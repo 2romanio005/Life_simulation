@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{7a2f65fe-c409-4c43-847c-cd54699a5bf1}</ProjectGuid>
+    <ProjectGuid>{ca26b037-207c-419c-b3ef-ba55f8b1172d}</ProjectGuid>
     <RootNamespace>Lifesimulation</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
@@ -72,6 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir).obj\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -88,7 +90,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -140,8 +141,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Actions.h" />
+    <ClInclude Include="Cell.h" />
+    <ClInclude Include="Creatures.h" />
+    <ClInclude Include="Creature_Herbivore.h" />
+    <ClInclude Include="Creature_Plant.h" />
+    <ClInclude Include="Creature_Scavenger.h" />
+    <ClInclude Include="Definition.h" />
+    <ClInclude Include="ENUMS.h" />
+    <ClInclude Include="MainConnection.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="Actions.cpp" />
     <ClCompile Include="Cell.cpp" />
+    <ClCompile Include="Creatures.cpp" />
     <ClCompile Include="Creature_Actions.cpp" />
     <ClCompile Include="Creature_Herbivore.cpp" />
     <ClCompile Include="Creature_Herbivore_Actions.cpp" />
@@ -152,25 +166,12 @@
     <ClCompile Include="Declaration.cpp" />
     <ClCompile Include="Function.cpp" />
     <ClCompile Include="Life_simulation.cpp" />
-    <ClCompile Include="Creatures.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Actions.h" />
-    <ClInclude Include="Cell.h" />
-    <ClInclude Include="Creature_Herbivore.h" />
-    <ClInclude Include="Creature_Plant.h" />
-    <ClInclude Include="Creature_Scavenger.h" />
-    <ClInclude Include="Definition.h" />
-    <ClInclude Include="ENUMS.h" />
-    <ClInclude Include="MainConnection.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="Creatures.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Life_simulation.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Ico_Life_simulation.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Life_simulation.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

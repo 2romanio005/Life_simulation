@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Creature_Plant.h"
 
 Creature_Plant::Action_go::Action_go(Creature_Plant* creature) : Action_go_global(creature)
