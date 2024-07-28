@@ -12,3 +12,4 @@
 
 
 #include "ENUMS.h"
+#include "Structs.h"

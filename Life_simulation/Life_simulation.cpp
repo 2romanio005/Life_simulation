@@ -370,7 +370,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 									for (int j = 0; j < load_size_map_y; j++)
 									{
 										std::getline(fin, str_to_read);
-										load_map[i][j].set_map_cord({ i, j });
+										load_map[i][j].set_map_coords({ i, j });
 										load_map[i][j].read_myself(str_to_read);
 									}
 								}
@@ -524,7 +524,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 		case WM_LBUTTONDOWN:
 		{
-			//std::pair<int, int> map_cord((GET_X_LPARAM(lParam) - margin_x) / size_cell, (GET_Y_LPARAM(lParam) - margin_y) / size_cell);
+			//std::pair<int, int> map_coords((GET_X_LPARAM(lParam) - margin_x) / size_cell, (GET_Y_LPARAM(lParam) - margin_y) / size_cell);
 			if (PosSliderStepDraw == MaxPosSliderStepDraw || FlagFullscreen) { break; }
 
 			int xPos = GET_X_LPARAM(lParam);
@@ -533,15 +533,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			if (xPos >= margin_x && xPos < (margin_x + size_cell * size_map_x) &&
 				yPos >= margin_y && yPos < (margin_y + size_cell * size_map_y)) {
 
-				std::pair<int, int> map_cord((GET_X_LPARAM(lParam) - margin_x) / size_cell, (GET_Y_LPARAM(lParam) - margin_y) / size_cell);
+				MapCoords map_coords { (GET_X_LPARAM(lParam) - margin_x) / size_cell, (GET_Y_LPARAM(lParam) - margin_y) / size_cell };
 
-				Cell *place = get_Cell_by_map_cord(map_cord);
+				Cell *place = get_Cell_by_map_coords(map_coords);
 
 				if (wParam & MK_SHIFT) {
 					SetCapture(hWnd);
 
 					if (peep_Creature != nullptr) {
-						place->set_Creature(peep_Creature->copy(map_cord));
+						place->set_Creature(peep_Creature->copy(map_coords));
 					}
 					else {
 						place->set_Creature();
@@ -593,12 +593,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					if (xPos >= margin_x && xPos < (margin_x + size_cell * size_map_x) &&
 						yPos >= margin_y && yPos < (margin_y + size_cell * size_map_y)) {
 
-						std::pair<int, int> map_cord((GET_X_LPARAM(lParam) - margin_x) / size_cell, (GET_Y_LPARAM(lParam) - margin_y) / size_cell);
+						MapCoords map_coords { (GET_X_LPARAM(lParam) - margin_x) / size_cell, (GET_Y_LPARAM(lParam) - margin_y) / size_cell };
 
-						Cell *place = get_Cell_by_map_cord(map_cord);
+						Cell *place = get_Cell_by_map_coords(map_coords);
 
 						if (peep_Creature != nullptr) {
-							place->set_Creature(peep_Creature->copy(map_cord));
+							place->set_Creature(peep_Creature->copy(map_coords));
 						}
 						else {
 							place->set_Creature();

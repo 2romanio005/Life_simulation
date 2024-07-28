@@ -3,7 +3,7 @@
 
 
 
-Creature_Plant::Creature_Plant(std::pair<int, int> map_cord, int energy, DIRECTION dir, int age, std::vector<Action*>* brain, unsigned int iter) : Creature(map_cord, energy, dir, age, brain, iter) {
+Creature_Plant::Creature_Plant(MapCoords map_coords, int energy, DIRECTION dir, int age, std::vector<Action*>* brain, unsigned int iter) : Creature(map_coords, energy, dir, age, brain, iter) {
 	this->CountPlant++;
 
 	if (brain == nullptr) {
@@ -24,9 +24,9 @@ Creature_Plant::~Creature_Plant() {
 	this->CountPlant--;
 }
 
-Creature* Creature_Plant::copy(std::pair<int, int> map_cord) {
+Creature* Creature_Plant::copy(MapCoords map_coords) {
 	std::vector<Action*>* br = copy_brain(this->brain);
-	Creature_Plant* tmp = new Creature_Plant(map_cord, this->energy, this->dir, this->age, br);
+	Creature_Plant* tmp = new Creature_Plant(map_coords, this->energy, this->dir, this->age, br);
 	delete br;
 	return tmp;
 }
@@ -38,11 +38,11 @@ void Creature_Plant::step()
 	this->check_my_live();
 }
 
-void Creature_Plant::draw_myself(HDC hdc, std::pair<int, int> cord)
+void Creature_Plant::draw_myself(HDC hdc, Coords coords)
 {
-	cord.first += size_half_cell; cord.second += size_half_cell;
+	coords.x += size_half_cell; coords.y += size_half_cell;
 	SelectObject(hdc, H_Green);
-	RoundRect(hdc, cord.first - size_creature_radius, cord.second - size_creature_radius, cord.first + size_creature_radius, cord.second + size_creature_radius, size_creature_radius * 2 - 2, size_creature_radius * 2 - 2);
+	RoundRect(hdc, coords.x - size_creature_radius, coords.y - size_creature_radius, coords.x + size_creature_radius, coords.y + size_creature_radius, size_creature_radius * 2 - 2, size_creature_radius * 2 - 2);
 }
 
 int Creature_Plant::get_type_count()

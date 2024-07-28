@@ -68,7 +68,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //	}
 //	case TYPE_CREATURE::HERBIVORE:
 //	{
-		//Cell* next_cell = get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, this->creature->dir));
+		//Cell* next_cell = get_Cell_by_map_coords(near_cell_coords(this->creature->map_coords, this->creature->dir));
 
 		//if (next_cell->get_TYPE_CREATURE() != TYPE_CREATURE::Void) {
 		//	int out = next_cell->get_Creature_energy();
@@ -119,7 +119,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //			near_place = &map[rand() % size_map_x][rand() % size_map_y];
 //		}
 //		else {
-//			near_place = get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, this->creature->dir));
+//			near_place = get_Cell_by_map_coords(near_cell_coords(this->creature->map_coords, this->creature->dir));
 //		}
 //
 //		if (near_place->get_TYPE_CREATURE() == TYPE_CREATURE::Void) {
@@ -136,13 +136,13 @@ std::pair<std::string, int>* Action::build_draw(){
 //			switch (((rand() % 100) < mut_type_chance) ? (rand() % 3) : this->creature->get_TYPE_CREATURE())
 //			{
 //			case TYPE_CREATURE::PLANT:
-//				cr = new Creature_Plant(near_place->get_map_cord(), this->creature->energy, DIRECTION(rand() % 4), 0, br);
+//				cr = new Creature_Plant(near_place->get_map_coords(), this->creature->energy, DIRECTION(rand() % 4), 0, br);
 //				break;
 //			case TYPE_CREATURE::HERBIVORE:
-//				cr = new Creature_Herbivore(near_place->get_map_cord(), this->creature->energy, DIRECTION(rand() % 4), 0, br);
+//				cr = new Creature_Herbivore(near_place->get_map_coords(), this->creature->energy, DIRECTION(rand() % 4), 0, br);
 //				break;
 //			case TYPE_CREATURE::SCAVENGER:
-//				cr = new Creature_Scavenger(near_place->get_map_cord(), this->creature->energy, DIRECTION(rand() % 4), 0, br);
+//				cr = new Creature_Scavenger(near_place->get_map_coords(), this->creature->energy, DIRECTION(rand() % 4), 0, br);
 //				break;
 //			default:
 //				throw;
@@ -185,7 +185,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //
 //bool Action_condition_by_TYPE_CREATURE::use()
 //{
-//	if (get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, turn(this->creature->dir, this->to_dir)))->get_TYPE_CREATURE() == this->type_creature) {
+//	if (get_Cell_by_map_coords(near_cell_coords(this->creature->map_coords, turn(this->creature->dir, this->to_dir)))->get_TYPE_CREATURE() == this->type_creature) {
 //		this->creature->iter = this->true_iter;
 //	}
 //	else {
@@ -206,7 +206,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //
 //bool Action_condition_by_Cell_energy::use()
 //{
-//	if (get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, this->to_dir == DIRECTION::UNDER ? DIRECTION::UNDER : turn(this->creature->dir, this->to_dir)))->get_free_energy() >= this->limit) {
+//	if (get_Cell_by_map_coords(near_cell_coords(this->creature->map_coords, this->to_dir == DIRECTION::UNDER ? DIRECTION::UNDER : turn(this->creature->dir, this->to_dir)))->get_free_energy() >= this->limit) {
 //		this->creature->iter = this->true_iter;
 //	}
 //	else {
@@ -249,10 +249,10 @@ std::pair<std::string, int>* Action::build_draw(){
 //{
 //	//creature->energy -= use_energy(10);
 //
-//	creature->see[0].push_back(&map[creature->map_cord.first][(creature->map_cord.second - creature->see[0].size() - 1 + size_map_y) % size_map_y]);
-//	creature->see[1].push_back(&map[(creature->map_cord.first + creature->see[1].size() + 1) % size_map_x][creature->map_cord.second]);
-//	creature->see[2].push_back(&map[creature->map_cord.first][(creature->map_cord.second + creature->see[2].size() + 1) % size_map_y]);
-//	creature->see[3].push_back(&map[(creature->map_cord.first - creature->see[3].size() - 1 + size_map_x) % size_map_x][creature->map_cord.second]);
+//	creature->see[0].push_back(&map[creature->map_coords.first][(creature->map_coords.second - creature->see[0].size() - 1 + size_map_y) % size_map_y]);
+//	creature->see[1].push_back(&map[(creature->map_coords.first + creature->see[1].size() + 1) % size_map_x][creature->map_coords.second]);
+//	creature->see[2].push_back(&map[creature->map_coords.first][(creature->map_coords.second + creature->see[2].size() + 1) % size_map_y]);
+//	creature->see[3].push_back(&map[(creature->map_coords.first - creature->see[3].size() - 1 + size_map_x) % size_map_x][creature->map_coords.second]);
 //}
 //
 //void Action_go(Creature* creature)
@@ -264,7 +264,7 @@ std::pair<std::string, int>* Action::build_draw(){
 //	//creature->energy -= use_energy(40);
 //	//}
 //
-//	std::pair<int, int> next = creature->map_cord;
+//	std::pair<int, int> next = creature->map_coords;
 //	switch (creature->dir)
 //	{
 //	case DIRECTION::UP:
@@ -291,8 +291,8 @@ std::pair<std::string, int>* Action::build_draw(){
 //
 //		creature->see[DIRECTION::UNDER][0] = &map[next.first][next.second];
 //
-//		map[next.first][next.second].swap_creapure(&map[creature->map_cord.first][creature->map_cord.second]);
-//		creature->map_cord = next;
+//		map[next.first][next.second].swap_creapure(&map[creature->map_coords.first][creature->map_coords.second]);
+//		creature->map_coords = next;
 //	}
 //}
 //

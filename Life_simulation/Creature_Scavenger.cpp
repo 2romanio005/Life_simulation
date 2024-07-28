@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Creature_Scavenger.h"
 
-Creature_Scavenger::Creature_Scavenger(std::pair<int, int> map_cord, int energy, DIRECTION dir, int age, std::vector<Action*>* brain, unsigned int iter) : Creature(map_cord, energy, dir, age, brain, iter) {
+Creature_Scavenger::Creature_Scavenger(MapCoords map_coords, int energy, DIRECTION dir, int age, std::vector<Action*>* brain, unsigned int iter) : Creature(map_coords, energy, dir, age, brain, iter) {
 	this->CountScavenger++;
 
 	if (brain == nullptr) {
@@ -29,18 +29,18 @@ void Creature_Scavenger::step()
 	this->check_my_live();
 }
 
-Creature* Creature_Scavenger::copy(std::pair<int, int> map_cord) {
+Creature* Creature_Scavenger::copy(MapCoords map_coords) {
 	std::vector<Action*>* br = copy_brain(this->brain);
-	Creature_Scavenger* tmp = new Creature_Scavenger(map_cord, this->energy, this->dir, this->age, br);
+	Creature_Scavenger* tmp = new Creature_Scavenger(map_coords, this->energy, this->dir, this->age, br);
 	delete br;
 	return tmp;
 }
 
-void Creature_Scavenger::draw_myself(HDC hdc, std::pair<int, int> cord)
+void Creature_Scavenger::draw_myself(HDC hdc, Coords coords)
 {
-	cord.first += size_half_cell; cord.second += size_half_cell;
+	coords.x += size_half_cell; coords.y += size_half_cell;
 	SelectObject(hdc, H_Blue);
-	RoundRect(hdc, cord.first - size_creature_radius, cord.second - size_creature_radius, cord.first + size_creature_radius, cord.second + size_creature_radius, size_creature_radius * 2 - 2, size_creature_radius * 2 - 2);
+	RoundRect(hdc, coords.x - size_creature_radius, coords.y - size_creature_radius, coords.x + size_creature_radius, coords.y + size_creature_radius, size_creature_radius * 2 - 2, size_creature_radius * 2 - 2);
 }
 
 int Creature_Scavenger::get_type_count()

@@ -76,29 +76,29 @@ bool Creature::Condition::Cond()
 */
 
 
-std::pair<int, int> near_cell_cord(std::pair<int, int> now_map_cord, DIRECTION to_dir)
+MapCoords near_cell_coords(MapCoords map_coords, DIRECTION to_dir)
 {
 	switch (to_dir)
 	{
 	case DIRECTION::UP:
-		now_map_cord.second = (now_map_cord.second - 1 + size_map_y) % size_map_y;
+		map_coords.y = (map_coords.y - 1 + size_map_y) % size_map_y;
 		break;
 	case DIRECTION::RIGHT:
-		now_map_cord.first = (now_map_cord.first + 1) % size_map_x;
+		map_coords.x = (map_coords.x + 1) % size_map_x;
 		break;
 	case DIRECTION::DOWN:
-		now_map_cord.second = (now_map_cord.second + 1) % size_map_y;
+		map_coords.y = (map_coords.y + 1) % size_map_y;
 		break;
 	case DIRECTION::LEFT:
-		now_map_cord.first = (now_map_cord.first - 1 + size_map_x) % size_map_x;
+		map_coords.x = (map_coords.x - 1 + size_map_x) % size_map_x;
 		break;
 	case DIRECTION::UNDER:// так хорошо
 		break;
 	}
-	return now_map_cord;
+	return map_coords;
 }
 
-Creature* parse_str_to_Creature(const std::pair<int, int>& map_cord, std::string str)
+Creature* parse_str_to_Creature(MapCoords map_coords, std::string str)
 {
 	int iter = 0;
 
@@ -221,11 +221,11 @@ Creature* parse_str_to_Creature(const std::pair<int, int>& map_cord, std::string
 	switch (type_creature)
 	{
 	case TYPE_CREATURE::PLANT:
-		return new Creature_Plant(map_cord, energy, dir, age, &br, br_iter);
+		return new Creature_Plant(map_coords, energy, dir, age, &br, br_iter);
 	case TYPE_CREATURE::HERBIVORE:
-		return new Creature_Herbivore(map_cord, energy, dir, age, &br, br_iter);
+		return new Creature_Herbivore(map_coords, energy, dir, age, &br, br_iter);
 	case TYPE_CREATURE::SCAVENGER:
-		return new Creature_Scavenger(map_cord, energy, dir, age, &br, br_iter);
+		return new Creature_Scavenger(map_coords, energy, dir, age, &br, br_iter);
 	default:
 		throw;
 	}
@@ -243,13 +243,13 @@ std::vector<Action*>* copy_brain(const std::vector<Action*>& sample_brain) {
 
 
 
-Creature::Creature(std::pair<int, int> map_cord, int energy, DIRECTION dir, int age, std::vector<Action*>* brain, unsigned int iter)
+Creature::Creature(MapCoords map_coords, int energy, DIRECTION dir, int age, std::vector<Action*>* brain, unsigned int iter)
 {
 	this->age = age;
 	this->energy = energy;
 	this->iter = iter;
 	this->dir = dir;
-	this->map_cord = map_cord;
+	this->map_coords = map_coords;
 
 	this->flag_step = true;
 }
@@ -414,7 +414,7 @@ void Creature::make_act()
 
 Cell* Creature::get_under_me()
 {
-	return get_Cell_by_map_cord(this->map_cord);
+	return get_Cell_by_map_coords(this->map_coords);
 }
 
 void Creature::next_iter()

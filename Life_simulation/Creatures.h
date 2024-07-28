@@ -13,17 +13,17 @@
 class Creature
 {
 public:
-	Creature(std::pair<int, int> map_cord, int energy, DIRECTION dir, int age = 0, std::vector<Action*>* brain = nullptr, unsigned int iter = 0);
+	Creature(MapCoords map_coords, int energy, DIRECTION dir, int age = 0, std::vector<Action*>* brain = nullptr, unsigned int iter = 0);
 
 	virtual ~Creature();
 
-	virtual Creature* copy(std::pair<int, int> map_cord) = 0;
+	virtual Creature* copy(MapCoords map_coords) = 0;
 
 	virtual void step() = 0;
 
 	void allow_to_act();
 
-	virtual void draw_myself(HDC hdc, std::pair<int, int> cord) = 0;
+	virtual void draw_myself(HDC hdc, Coords coords) = 0;
 
 	void build_brain(HWND hWnd);
 	void draw_brain();
@@ -57,7 +57,7 @@ protected:
 	std::vector<Action*> brain;
 
 	DIRECTION dir;
-	std::pair<int, int> map_cord;
+	MapCoords map_coords;
 
 	bool flag_step;
 	

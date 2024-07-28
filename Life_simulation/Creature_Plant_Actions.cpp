@@ -7,11 +7,11 @@ Creature_Plant::Action_go::Action_go(Creature_Plant* creature) : Action_go_globa
 
 bool Creature_Plant::Action_go::use()
 {
-	std::pair<int, int> next = near_cell_cord(static_cast<Creature_Plant*>(this->creature)->map_cord, static_cast<Creature_Plant*>(this->creature)->dir);
+	MapCoords next = near_cell_coords(static_cast<Creature_Plant*>(this->creature)->map_coords, static_cast<Creature_Plant*>(this->creature)->dir);
 
-	if (map[next.first][next.second].get_TYPE_CREATURE() == TYPE_CREATURE::Void) {
-		map[next.first][next.second].swap_Creapure(&map[static_cast<Creature_Plant*>(this->creature)->map_cord.first][static_cast<Creature_Plant*>(this->creature)->map_cord.second]);
-		static_cast<Creature_Plant*>(this->creature)->map_cord = next;
+	if (map[next.x][next.y].get_TYPE_CREATURE() == TYPE_CREATURE::Void) {
+		map[next.x][next.y].swap_Creapure(&map[static_cast<Creature_Plant*>(this->creature)->map_coords.x][static_cast<Creature_Plant*>(this->creature)->map_coords.y]);
+		static_cast<Creature_Plant*>(this->creature)->map_coords = next;
 	}
 
 	static_cast<Creature_Plant*>(this->creature)->next_iter();
@@ -57,7 +57,7 @@ bool Creature_Plant::Action_multiply::use()
 			near_place = &map[rand() % size_map_x][rand() % size_map_y];
 		}
 		else {
-			near_place = get_Cell_by_map_cord(near_cell_cord(static_cast<Creature_Plant*>(this->creature)->map_cord, static_cast<Creature_Plant*>(this->creature)->dir));
+			near_place = get_Cell_by_map_coords(near_cell_coords(static_cast<Creature_Plant*>(this->creature)->map_coords, static_cast<Creature_Plant*>(this->creature)->dir));
 		}
 
 		if (near_place->get_TYPE_CREATURE() == TYPE_CREATURE::Void) {
@@ -75,19 +75,19 @@ bool Creature_Plant::Action_multiply::use()
 			//switch (((rand() % 100) < mut_type_chance) ? (rand() % 3) : static_cast<Creature_Plant*>(this->creature)->get_TYPE_CREATURE())
 			//{
 			//case TYPE_CREATURE::PLANT:
-			//	cr = new Creature_Plant(near_place->get_map_cord(), static_cast<Creature_Plant*>(this->creature)->energy, DIRECTION(rand() % 4), 0, br);
+			//	cr = new Creature_Plant(near_place->get_map_coords(), static_cast<Creature_Plant*>(this->creature)->energy, DIRECTION(rand() % 4), 0, br);
 			//	break;
 			//case TYPE_CREATURE::HERBIVORE:
-			//	cr = new Creature_Herbivore(near_place->get_map_cord(), static_cast<Creature_Plant*>(this->creature)->energy, DIRECTION(rand() % 4), 0, br);
+			//	cr = new Creature_Herbivore(near_place->get_map_coords(), static_cast<Creature_Plant*>(this->creature)->energy, DIRECTION(rand() % 4), 0, br);
 			//	break;
 			//case TYPE_CREATURE::SCAVENGER:
-			//	cr = new Creature_Scavenger(near_place->get_map_cord(), static_cast<Creature_Plant*>(this->creature)->energy, DIRECTION(rand() % 4), 0, br);
+			//	cr = new Creature_Scavenger(near_place->get_map_coords(), static_cast<Creature_Plant*>(this->creature)->energy, DIRECTION(rand() % 4), 0, br);
 			//	break;
 			//default:
 			//	throw;
 			//	break;
 			//}
-			near_place->set_Creature(new Creature_Plant(near_place->get_map_cord(), static_cast<Creature_Plant*>(this->creature)->energy, DIRECTION(rand() % 4), rand() % br->size(), br));
+			near_place->set_Creature(new Creature_Plant(near_place->get_map_coords(), static_cast<Creature_Plant*>(this->creature)->energy, DIRECTION(rand() % 4), rand() % br->size(), br));
 			delete br;
 		}
 	}

@@ -128,7 +128,7 @@ Creature::Action_condition_by_TYPE_CREATURE_global::Action_condition_by_TYPE_CRE
 
 bool Creature::Action_condition_by_TYPE_CREATURE_global::use()
 {
-	if (get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, turn(this->creature->dir, this->to_dir)))->get_TYPE_CREATURE() == this->type_creature) {
+	if (get_Cell_by_map_coords(near_cell_coords(this->creature->map_coords, turn(this->creature->dir, this->to_dir)))->get_TYPE_CREATURE() == this->type_creature) {
 		this->creature->iter = this->true_iter;
 	}
 	else {
@@ -203,7 +203,7 @@ Creature:: Action_condition_by_Cell_energy_global:: Action_condition_by_Cell_ene
 
 bool Creature::Action_condition_by_Cell_energy_global::use()
 {
-	if (get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, this->to_dir == DIRECTION::UNDER ? DIRECTION::UNDER : turn(this->creature->dir, this->to_dir)))->get_free_energy() >= this->limit) {
+	if (get_Cell_by_map_coords(near_cell_coords(this->creature->map_coords, this->to_dir == DIRECTION::UNDER ? DIRECTION::UNDER : turn(this->creature->dir, this->to_dir)))->get_free_energy() >= this->limit) {
 		this->creature->iter = this->true_iter;
 	}
 	else {
@@ -279,7 +279,7 @@ Creature::Action_condition_by_Creature_energy_global::Action_condition_by_Creatu
 
 bool Creature::Action_condition_by_Creature_energy_global::use()
 {
-	if (get_Cell_by_map_cord(near_cell_cord(this->creature->map_cord, this->to_dir == DIRECTION::UNDER ? DIRECTION::UNDER : turn(this->creature->dir, this->to_dir)))->get_Creature_energy() >= this->limit) {
+	if (get_Cell_by_map_coords(near_cell_coords(this->creature->map_coords, this->to_dir == DIRECTION::UNDER ? DIRECTION::UNDER : turn(this->creature->dir, this->to_dir)))->get_Creature_energy() >= this->limit) {
 		this->creature->iter = this->true_iter;
 	}
 	else {

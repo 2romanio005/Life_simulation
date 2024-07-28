@@ -118,7 +118,7 @@ void BuildObject() {
 		map[i] = new Cell[size_map_y];
 		for (int j = 0; j < size_map_y; j++)
 		{
-			map[i][j].set_map_cord({ i, j });
+			map[i][j].set_map_coords({ i, j });
 			map[i][j].change_free_energy(rand() % limit_energy);
 			//map[i][j].solar_energy = rand() % 500;
 

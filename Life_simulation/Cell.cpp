@@ -4,9 +4,9 @@
 
 
 
-Cell* get_Cell_by_map_cord(const std::pair<int, int>& map_cord)
+Cell* get_Cell_by_map_coords(MapCoords map_coords)
 {
-	return &map[map_cord.first][map_cord.second];
+	return &map[map_coords.x][map_coords.y];
 }
 
 
@@ -45,20 +45,20 @@ void Cell::draw_myself(HDC hdc)
 	//SelectObject(hdc, CreatePen(PS_SOLID, 1, RGB(255, 255, 255)));
 	//SelectObject(hdc, H_Gray[0]);
 	//SelectObject(hdc, (HGDIOBJ)NULL_PEN);
-	std::pair<int, int> cord(this->map_cord.first * size_cell, this->map_cord.second * size_cell);
+	Coords coords { this->map_coords.x * size_cell, this->map_coords.y * size_cell };
 
 	SelectObject(hdc, P_Null);
 	SelectObject(hdc, H_Gray[(std::min)(this->free_energy / (limit_energy / 200), 199)]);
-	Rectangle(hdc, cord.first, cord.second, cord.first + size_cell + 1, cord.second + size_cell + 1);
+	Rectangle(hdc, coords.x, coords.y, coords.x + size_cell + 1, coords.y + size_cell + 1);
 
 	if (this->creature != nullptr) {
-		this->creature->draw_myself(hdc, cord);
+		this->creature->draw_myself(hdc, coords);
 
 		if (this->creature == peep_Creature) {
 			int r = int(size_cell * (CreatureRadiusCoeff - 0.1));
-			cord.first += size_half_cell; cord.second += size_half_cell;
+			coords.x += size_half_cell; coords.y += size_half_cell;
 			SelectObject(hdc, H_Gray[0]);
-			RoundRect(hdc, cord.first - r, cord.second - r, cord.first + r, cord.second + r, r * 2 - 2, r * 2 - 2);
+			RoundRect(hdc, coords.x - r, coords.y - r, coords.x + r, coords.y + r, r * 2 - 2, r * 2 - 2);
 		}
 	}
 }
@@ -83,7 +83,7 @@ void Cell::read_myself(std::string str)
 
 	str.erase(0, iter);
 	iter = 0;
-	this->set_Creature(parse_str_to_Creature(this->map_cord, str));
+	this->set_Creature(parse_str_to_Creature(this->map_coords, str));
 }
 
 
@@ -140,9 +140,9 @@ void Cell::swap_Creapure(Cell* cell)
 	cell->creature = tmp;
 }
 
-void Cell::set_map_cord(std::pair<int, int> map_cord)
+void Cell::set_map_coords(MapCoords map_coords)
 {
-	this->map_cord = map_cord;
+	this->map_coords = map_coords;
 }
 
 int Cell::get_free_energy()
@@ -150,9 +150,9 @@ int Cell::get_free_energy()
 	return this->free_energy;
 }
 
-std::pair<int, int> Cell::get_map_cord()
+MapCoords Cell::get_map_coords()
 {
-	return this->map_cord;
+	return this->map_coords;
 }
 
 

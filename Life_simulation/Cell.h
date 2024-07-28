@@ -27,11 +27,11 @@ public:
 
 	void swap_Creapure(Cell* cell);
 
-	void set_map_cord(std::pair<int, int> map_cord);
+	void set_map_coords(MapCoords map_coords);
 
 
 	int get_free_energy();
-	std::pair<int, int> get_map_cord();
+	MapCoords get_map_coords();
 	TYPE_CREATURE get_TYPE_CREATURE();
 	int get_Creature_energy();
 	Creature* get_Creature();
@@ -40,7 +40,7 @@ public:
 private:
 	int free_energy;
 
-	std::pair<int, int> map_cord;
+	MapCoords map_coords;
 
 	Creature* creature;
 };

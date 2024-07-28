@@ -150,6 +150,7 @@
     <ClInclude Include="Definition.h" />
     <ClInclude Include="ENUMS.h" />
     <ClInclude Include="Includes.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="Rendering.h" />
     <ClInclude Include="RenderingFunctions.h" />
     <ClInclude Include="MainConnection.h" />
@@ -170,9 +171,11 @@
     <ClCompile Include="Declaration.cpp" />
     <ClCompile Include="Function.cpp" />
     <ClCompile Include="Life_simulation.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="Rendering.cpp" />
     <ClCompile Include="RenderingFunctions.cpp" />
     <ClCompile Include="RenderingVariables.cpp" />
+    <ClCompile Include="Structs.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Ico_Life_simulation.ico" />

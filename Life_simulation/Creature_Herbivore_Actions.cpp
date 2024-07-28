@@ -7,11 +7,11 @@ Creature_Herbivore::Action_go::Action_go(Creature_Herbivore* creature) : Action_
 
 bool Creature_Herbivore::Action_go::use()
 {
-	std::pair<int, int> next = near_cell_cord(static_cast<Creature_Herbivore*>(this->creature)->map_cord, static_cast<Creature_Herbivore*>(this->creature)->dir);
+	MapCoords next = near_cell_coords(static_cast<Creature_Herbivore*>(this->creature)->map_coords, static_cast<Creature_Herbivore*>(this->creature)->dir);
 
-	if (map[next.first][next.second].get_TYPE_CREATURE() == TYPE_CREATURE::Void) {
-		map[next.first][next.second].swap_Creapure(&map[static_cast<Creature_Herbivore*>(this->creature)->map_cord.first][static_cast<Creature_Herbivore*>(this->creature)->map_cord.second]);
-		static_cast<Creature_Herbivore*>(this->creature)->map_cord = next;
+	if (map[next.x][next.y].get_TYPE_CREATURE() == TYPE_CREATURE::Void) {
+		map[next.x][next.y].swap_Creapure(&map[static_cast<Creature_Herbivore*>(this->creature)->map_coords.x][static_cast<Creature_Herbivore*>(this->creature)->map_coords.y]);
+		static_cast<Creature_Herbivore*>(this->creature)->map_coords = next;
 	}
 
 	static_cast<Creature_Herbivore*>(this->creature)->next_iter();
@@ -30,7 +30,7 @@ Creature_Herbivore::Action_eat::Action_eat(Creature_Herbivore* creature) : Actio
 
 bool Creature_Herbivore::Action_eat::use()
 {
-	Cell* next_cell = get_Cell_by_map_cord(near_cell_cord(static_cast<Creature_Herbivore*>(this->creature)->map_cord, static_cast<Creature_Herbivore*>(this->creature)->dir));
+	Cell* next_cell = get_Cell_by_map_coords(near_cell_coords(static_cast<Creature_Herbivore*>(this->creature)->map_coords, static_cast<Creature_Herbivore*>(this->creature)->dir));
 
 	if (next_cell->get_TYPE_CREATURE() != TYPE_CREATURE::Void) {
 		int out = next_cell->get_Creature_energy();
@@ -62,7 +62,7 @@ bool Creature_Herbivore::Action_multiply::use()
 			near_place = &map[rand() % size_map_x][rand() % size_map_y];
 		}
 		else {
-			near_place = get_Cell_by_map_cord(near_cell_cord(static_cast<Creature_Herbivore*>(this->creature)->map_cord, static_cast<Creature_Herbivore*>(this->creature)->dir));
+			near_place = get_Cell_by_map_coords(near_cell_coords(static_cast<Creature_Herbivore*>(this->creature)->map_coords, static_cast<Creature_Herbivore*>(this->creature)->dir));
 		}
 
 		if (near_place->get_TYPE_CREATURE() == TYPE_CREATURE::Void) {
@@ -76,7 +76,7 @@ bool Creature_Herbivore::Action_multiply::use()
 				static_cast<Creature_Herbivore*>(this->creature)->brain_mutation(br, mut_iter);
 			}
 
-			near_place->set_Creature(new Creature_Herbivore(near_place->get_map_cord(), static_cast<Creature_Herbivore*>(this->creature)->energy, DIRECTION(rand() % 4), rand() % br->size(), br));
+			near_place->set_Creature(new Creature_Herbivore(near_place->get_map_coords(), static_cast<Creature_Herbivore*>(this->creature)->energy, DIRECTION(rand() % 4), rand() % br->size(), br));
 			delete br;
 		}
 	}

@@ -52,12 +52,12 @@ class Action_condition_by_Cell_energy_global;
 
 
 // в Creature.cpp
-std::pair<int, int> near_cell_cord(std::pair<int, int> now_map_cord, DIRECTION to_dir);
-Creature* parse_str_to_Creature(const std::pair<int, int>& map_cord, std::string str);
+MapCoords near_cell_coords(MapCoords map_coords, DIRECTION to_dir);
+Creature* parse_str_to_Creature(MapCoords map_coords, std::string str);
 std::vector<Action*>* copy_brain(const std::vector<Action*>& sample_brain);
 
 // в Cell.cpp
-Cell* get_Cell_by_map_cord(const std::pair<int, int>& map_cord);
+Cell* get_Cell_by_map_coords(MapCoords map_coords);
 
 // сверху Function.cpp
 int parse_str_to_int_one_step(const std::string& s, int* iter, char separator = ';');
@@ -71,9 +71,8 @@ std::string string_by_dir_for_turn(DIRECTION dir);
 
 
 
-extern Cell** map;
 
-
+extern Cell **map;
 
 
 
