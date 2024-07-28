@@ -149,7 +149,11 @@
     <ClInclude Include="Creature_Scavenger.h" />
     <ClInclude Include="Definition.h" />
     <ClInclude Include="ENUMS.h" />
+    <ClInclude Include="Includes.h" />
+    <ClInclude Include="Rendering.h" />
+    <ClInclude Include="RenderingFunctions.h" />
     <ClInclude Include="MainConnection.h" />
+    <ClInclude Include="RenderingVariables.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +170,9 @@
     <ClCompile Include="Declaration.cpp" />
     <ClCompile Include="Function.cpp" />
     <ClCompile Include="Life_simulation.cpp" />
+    <ClCompile Include="Rendering.cpp" />
+    <ClCompile Include="RenderingFunctions.cpp" />
+    <ClCompile Include="RenderingVariables.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Ico_Life_simulation.ico" />

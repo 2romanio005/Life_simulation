@@ -1,16 +1,5 @@
 ﻿#pragma once
-#include "ENUMS.h"
-
-#include <windows.h>
-#include <WindowsX.h>
-
-#include <fstream>
-
-#include <algorithm>
-#include <ctime>
-#include <vector>
-#include <string>
-
+#include "Includes.h"
 
 
 extern int size_screen_x;
@@ -90,27 +79,16 @@ extern Cell** map;
 
 
 void OneStep();
-void DrawInterface();
-void Draw(HDC hdc);
-void FullUpdateDraw(HWND hWnd);
-void UpdateDraw(HWND hWnd);
 void UpdateSizeScreen(HWND hWnd, const int size_x, const int size_y, bool flag_always = false);
-void MoveWidget();
-void UpdateWidget();
 
 void StopStep(HWND hWnd);
 void StartStep(HWND hWnd);
 void ResetMap(HWND hWnd);
 
 
-void BuildWidget(HWND hWnd);
+
 void BuildObject();
-void BuildDrawEffecter(HWND hWnd);
-
-void DestroyWidget(HWND hWnd);
 void DestroyObject();
-void DestroyDrawEffecter(HWND hWnd);
-
 
 
 

@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include "RenderingFunctions.h"
+
 #include "Definition.h"
 #include "MainConnection.h"
 #include "Creature_Plant.h"
@@ -229,7 +231,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 								peep_Creature->build_brain(hWnd);
 								peep_Creature->draw_brain();
-								DrawInterface();
+								RedrawInterface();
 							}
 							catch (const std::out_of_range &oor)
 							{
@@ -389,7 +391,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 								SendMessage(CheckBoxRandDivision, BM_SETCHECK, FlagRandDivision = LoadFlagRandDivision, 0);
 
-								DrawInterface();
+								RedrawInterface();
 
 								MoveSlider(hWnd, 3, &(PosSliderRedEat = LoadPosSliderRedEat), 0, MaxPosSliderRedEat);
 								MoveSlider(hWnd, 4, &(PosSliderRedLeave = LoadPosSliderRedLeave), 0, MaxPosSliderRedLeave);
@@ -445,7 +447,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					{
 						OneStep();
 
-						DrawInterface();
+						RedrawInterface();
 
 						if (FlagAutomaticStop && (Creature_Plant::get_type_count() < 5 || Creature_Herbivore::get_type_count() < 5 || Creature_Scavenger::get_type_count() < 5)) {
 							StopStep(hWnd);
@@ -459,7 +461,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 						}
 					}
 					//if (CountStep % PosSliderStepDraw == 0) {
-					UpdateDraw(hWnd);
+					InvalidateMapRect(hWnd);
 					//}
 					break;
 			}
@@ -467,23 +469,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		}
 		case WM_PAINT:
 		{
-			MainHdc = BeginPaint(hWnd, &MainPs);
+			//if (position_WM_SETREDRAW) {
+				MainHdc = BeginPaint(hWnd, &MainPs);
 
-			Draw(MainHdc);
-			//ValidateRect(hWnd, RECT);
+				DrawMap(MainHdc);
+				//ValidateRect(hWnd, RECT);
 
-			//SelectObject(MainHdc, CreatePen(PS_SOLID, 1, RGB(255, 255, 255)));
-			//SelectObject(MainHdc, CreatePen(PS_NULL, 1, RGB(0, 0, 0)));
-			//SelectObject(hdc, H_Gray[min(this->free_energy / (limit_energy / 200), 199)]);
-			//SelectObject(hdc, (HGDIOBJ)NULL_PEN);
-			//SelectObject(MainHdc, H_Gray[0]);
-			//Rectangle(MainHdc, 30, 30, 130, 130);
-			//SelectObject(MainHdc, H_Gray[140]);
-			//Rectangle(MainHdc, 120, 30, 230, 230);
-			EndPaint(hWnd, &MainPs);
+				//SelectObject(MainHdc, CreatePen(PS_SOLID, 1, RGB(255, 255, 255)));
+				//SelectObject(MainHdc, CreatePen(PS_NULL, 1, RGB(0, 0, 0)));
+				//SelectObject(hdc, H_Gray[min(this->free_energy / (limit_energy / 200), 199)]);
+				//SelectObject(hdc, (HGDIOBJ)NULL_PEN);
+				//SelectObject(MainHdc, H_Gray[0]);
+				//Rectangle(MainHdc, 30, 30, 130, 130);
+				//SelectObject(MainHdc, H_Gray[140]);
+				//Rectangle(MainHdc, 120, 30, 230, 230);
+				EndPaint(hWnd, &MainPs);
 
-			if (!position_WM_SETREDRAW) { SendMessage(hWnd, WM_SETREDRAW, false, 0); }  // убрать отрисовку если она не нужна
-
+				//if (!position_WM_SETREDRAW) { SendMessage(hWnd, WM_SETREDRAW, false, 0); }  // убрать отрисовку если она не нужна
+			//}
 			break;
 		}
 
@@ -511,6 +514,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 						SetWindowLong(hWnd, GWL_STYLE, WS_POPUP); // Устанавливаем новый стиль
 						ShowWindow(hWnd, SW_SHOWMAXIMIZED); // Окно во весь экран
 					}
+					break;
+				case VK_ESCAPE:
+
 					break;
 			}
 			break;
@@ -571,7 +577,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 					}
 				}
 
-				FullUpdateDraw(hWnd);
+				FullRedraw(hWnd);
 			}
 			break;
 		}
@@ -598,7 +604,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 							place->set_Creature();
 						}
 
-						FullUpdateDraw(hWnd);
+						FullRedraw(hWnd);
 					}
 				}
 			}
@@ -612,14 +618,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 
 		case WM_ENTERSIZEMOVE:
 		{
-			SendMessage(hWnd, WM_SETREDRAW, false, 0);
+			//SendMessage(hWnd, WM_SETREDRAW, false, 0);
 			position_WM_SETREDRAW = false;
 			break;
 		}
 		case WM_EXITSIZEMOVE:
 		{
-			SendMessage(hWnd, WM_SETREDRAW, true, 0);
 			position_WM_SETREDRAW = true;
+			//SendMessage(hWnd, WM_SETREDRAW, true, 0);
 
 			//if(1 || size_cell == MinSizeCell || (size_cell * size_map_y + 3 * margin_y + 136) < 
 			// ){  // это чтобы самый маленький экран отрисовался когда ты отпустил
@@ -666,7 +672,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			BuildWidget(hWnd);
 			BuildObject();
 
-			FullUpdateDraw(hWnd);
+			FullRedraw(hWnd);
 			break;
 		}
 		case WM_DESTROY:

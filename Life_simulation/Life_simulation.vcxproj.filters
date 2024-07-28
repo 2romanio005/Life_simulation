@@ -28,6 +28,12 @@
     <Filter Include="Исходные файлы\Creatures\Scavenger">
       <UniqueIdentifier>{24a6227d-9019-43b8-874e-f312cd46d7f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\Rendering">
+      <UniqueIdentifier>{baea11ec-82d1-4cc3-82d0-f351528bff8b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Rendering">
+      <UniqueIdentifier>{2e9fed86-2232-4336-b898-7d5351b3c1a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h">
@@ -59,6 +65,18 @@
     </ClInclude>
     <ClInclude Include="Creatures.h">
       <Filter>Файлы заголовков\Creatures</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingFunctions.h">
+      <Filter>Файлы заголовков\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingVariables.h">
+      <Filter>Файлы заголовков\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="Rendering.h">
+      <Filter>Файлы заголовков\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +118,15 @@
     </ClCompile>
     <ClCompile Include="Actions.cpp">
       <Filter>Исходные файлы\Creatures</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingFunctions.cpp">
+      <Filter>Исходные файлы\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingVariables.cpp">
+      <Filter>Исходные файлы\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="Rendering.cpp">
+      <Filter>Исходные файлы\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
