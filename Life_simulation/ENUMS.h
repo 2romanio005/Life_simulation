@@ -8,7 +8,7 @@ enum TYPE_CREATURE
 
 	Void,
 
-	TYPE_CREATURE_SIZE    // закреплено как последнее для %
+	SIZE_TYPE_CREATURE		// закреплено как последнее для %
 };
 
 enum TYPE_ACTION
@@ -21,9 +21,7 @@ enum TYPE_ACTION
 	CONDITION_BY_CELL_ENERGY,
 	CONDITION_BY_CREATURE_ENERGY,
 
-	CHANGE_ITER,   // не испльзуется // закреплено как последнее для % 
-
-	TYPE_ACTION_SIZE
+	SIZE_TYPE_ACTION		// закреплено как последнее для % 
 };
 
 enum DIRECTION

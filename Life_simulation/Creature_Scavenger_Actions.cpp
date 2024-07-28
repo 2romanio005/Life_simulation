@@ -130,22 +130,3 @@ Action* Creature_Scavenger::Action_condition_by_Creature_energy::copy()
 {
 	return new Action_condition_by_Creature_energy(static_cast<Creature_Scavenger*>(this->creature), this->to_dir, this->true_iter, this->false_iter, this->limit);
 }
-
-
-Creature_Scavenger::Action_change_iter::Action_change_iter(Creature_Scavenger* creature, unsigned int iter) : Action_change_iter_global(creature, iter)
-{
-}
-
-bool Creature_Scavenger::Action_change_iter::use()
-{
-	static_cast<Creature_Scavenger*>(this->creature)->iter = this->iter;
-
-	return false;
-}
-
-Action* Creature_Scavenger::Action_change_iter::copy()
-{
-	return new Action_change_iter(static_cast<Creature_Scavenger*>(this->creature), this->iter);
-}
-
-

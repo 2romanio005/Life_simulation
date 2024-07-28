@@ -142,21 +142,3 @@ Action* Creature_Plant::Action_condition_by_Creature_energy::copy()
 }
 
 
-
-Creature_Plant::Action_change_iter::Action_change_iter(Creature_Plant* creature, unsigned int iter) : Action_change_iter_global(creature, iter)
-{
-}
-
-bool Creature_Plant::Action_change_iter::use()
-{
-	static_cast<Creature_Plant*>(this->creature)->iter = this->iter;
-
-	return false;
-}
-
-Action* Creature_Plant::Action_change_iter::copy()
-{
-	return new Action_change_iter(static_cast<Creature_Plant*>(this->creature), this->iter);
-}
-
-

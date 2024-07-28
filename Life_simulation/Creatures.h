@@ -184,25 +184,6 @@ protected:
 		unsigned int true_iter;
 		unsigned int false_iter;
 	};
-
-	class Action_change_iter_global : public Action {
-	public:
-		Action_change_iter_global(Creature* creature, unsigned int iter);
-
-		virtual bool use() = 0;
-
-		bool mutation() override;
-
-		virtual Action* copy() = 0;
-
-		std::string* draw_myself() override;
-		void write_myself(std::string* out) override;
-
-		TYPE_ACTION get_TYPE_ACTION() override;
-	protected:
-		unsigned int iter;
-	};
-
 };
 
 

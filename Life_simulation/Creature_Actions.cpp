@@ -345,53 +345,6 @@ TYPE_ACTION Creature::Action_condition_by_Creature_energy_global::get_TYPE_ACTIO
 
 
 
-Creature::Action_change_iter_global::Action_change_iter_global(Creature* creature, unsigned int iter) : Action(creature)
-{
-	this->iter = iter;
-}
-
-bool Creature::Action_change_iter_global::mutation()
-{
-	this->iter = rand() % this->creature->brain.size();
-	return true;
-}
-
-std::string* Creature::Action_change_iter_global::draw_myself()
-{
-	return new std::string[5]
-	{
-		"Переход",
-		"",
-		"",
-		std::to_string(this->iter),
-		std::to_string(this->iter)
-	};
-}
-
-void Creature::Action_change_iter_global::write_myself(std::string* out)
-{
-	*out +=
-		std::to_string(this->get_TYPE_ACTION())
-		+ ";0;0"
-		+ ';' + std::to_string(this->iter)
-		+ ';' + std::to_string(this->iter)
-		+ ';';
-}
-
-TYPE_ACTION Creature::Action_change_iter_global::get_TYPE_ACTION()
-{
-	return TYPE_ACTION::CHANGE_ITER;
-}
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -76,7 +76,7 @@ void Creature_Herbivore::brain_mutation(std::vector<Action*>* change_brain, unsi
 
 Action* Creature_Herbivore::get_rand_Action(Creature* creature, unsigned int max_iter)
 {
-	switch (rand() % (TYPE_ACTION::CHANGE_ITER))  // случайное действие с номером до CHANGE_ITER не включительно
+	switch (rand() % (TYPE_ACTION::SIZE_TYPE_ACTION))  // случайное действие
 	{
 	case TYPE_ACTION::GO:
 		return new Creature_Herbivore::Action_go(static_cast<Creature_Herbivore*>(creature));

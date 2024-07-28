@@ -122,7 +122,7 @@ void BuildObject() {
 			map[i][j].change_free_energy(rand() % limit_energy);
 			//map[i][j].solar_energy = rand() % 500;
 
-			switch (rand() % TYPE_CREATURE::TYPE_CREATURE_SIZE)
+			switch (rand() % TYPE_CREATURE::SIZE_TYPE_CREATURE)
 			{
 				case TYPE_CREATURE::PLANT:
 					map[i][j].set_Creature(new Creature_Plant({ i, j }, start_energy, DIRECTION(rand() % 4), rand() % limit_age));

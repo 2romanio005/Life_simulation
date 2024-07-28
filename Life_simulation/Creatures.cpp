@@ -144,9 +144,6 @@ Creature* parse_str_to_Creature(MapCoords map_coords, std::string str)
 			case TYPE_ACTION::CONDITION_BY_CREATURE_ENERGY:
 				br.push_back(new Creature_Plant::Action_condition_by_Creature_energy(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
 				break;
-			case TYPE_ACTION::CHANGE_ITER:
-				br.push_back(new Creature_Plant::Action_change_iter(nullptr, arr[3]));
-				break;
 			default:
 				throw;
 			}
@@ -175,9 +172,6 @@ Creature* parse_str_to_Creature(MapCoords map_coords, std::string str)
 			case TYPE_ACTION::CONDITION_BY_CREATURE_ENERGY:
 				br.push_back(new Creature_Herbivore::Action_condition_by_Creature_energy(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
 				break;
-			case TYPE_ACTION::CHANGE_ITER:
-				br.push_back(new Creature_Herbivore::Action_change_iter(nullptr, arr[3]));
-				break;
 			default:
 				throw;
 			}
@@ -205,9 +199,6 @@ Creature* parse_str_to_Creature(MapCoords map_coords, std::string str)
 				break;
 			case TYPE_ACTION::CONDITION_BY_CREATURE_ENERGY:
 				br.push_back(new Creature_Scavenger::Action_condition_by_Creature_energy(nullptr, DIRECTION(arr[1]), arr[3], arr[4], arr[2]));
-				break;
-			case TYPE_ACTION::CHANGE_ITER:
-				br.push_back(new Creature_Scavenger::Action_change_iter(nullptr, arr[3]));
 				break;
 			default:
 				throw;

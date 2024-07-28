@@ -86,15 +86,6 @@ public:
 
 		Action* copy() override;
 	};
-
-	class Action_change_iter : public Action_change_iter_global {
-	public:
-		Action_change_iter(Creature_Scavenger* creature, unsigned int iter);
-
-		bool use() override;
-
-		Action* copy() override;
-	};
 };
 
 
